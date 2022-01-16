@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mine.cloud.DMicro.dao.userMapper">
+  <resultMap id="BaseResultMap" type="mine.cloud.DMicro.pojo.user">
+    <id column="usr_id" jdbcType="INTEGER" property="usrId" />
+    <result column="usr_nickname" jdbcType="VARCHAR" property="usrNickname" />
+    <result column="usr_phone" jdbcType="VARCHAR" property="usrPhone" />
+    <result column="usr_text" jdbcType="VARCHAR" property="usrText" />
+    <result column="usr_money" jdbcType="BIGINT" property="usrMoney" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    usr_id, usr_nickname, usr_phone, usr_text, usr_money
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from usr_table
+    where usr_id = #{usrId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from usr_table
+    where usr_id = #{usrId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="mine.cloud.DMicro.pojo.user">
+    insert into usr_table (usr_id, usr_nickname, usr_phone, 
+      usr_text, usr_money)
+    values (#{usrId,jdbcType=INTEGER}, #{usrNickname,jdbcType=VARCHAR}, #{usrPhone,jdbcType=VARCHAR}, 
+      #{usrText,jdbcType=VARCHAR}, #{usrMoney,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="mine.cloud.DMicro.pojo.user">
+    insert into usr_table
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="usrId != null">
+        usr_id,
+      </if>
+      <if test="usrNickname != null">
+        usr_nickname,
+      </if>
+      <if test="usrPhone != null">
+        usr_phone,
+      </if>
+      <if test="usrText != null">
+        usr_text,
+      </if>
+      <if test="usrMoney != null">
+        usr_money,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="usrId != null">
+        #{usrId,jdbcType=INTEGER},
+      </if>
+      <if test="usrNickname != null">
+        #{usrNickname,jdbcType=VARCHAR},
+      </if>
+      <if test="usrPhone != null">
+        #{usrPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="usrText != null">
+        #{usrText,jdbcType=VARCHAR},
+      </if>
+      <if test="usrMoney != null">
+        #{usrMoney,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="mine.cloud.DMicro.pojo.user">
+    update usr_table
+    <set>
+      <if test="usrNickname != null">
+        usr_nickname = #{usrNickname,jdbcType=VARCHAR},
+      </if>
+      <if test="usrPhone != null">
+        usr_phone = #{usrPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="usrText != null">
+        usr_text = #{usrText,jdbcType=VARCHAR},
+      </if>
+      <if test="usrMoney != null">
+        usr_money = #{usrMoney,jdbcType=BIGINT},
+      </if>
+    </set>
+    where usr_id = #{usrId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="mine.cloud.DMicro.pojo.user">
+    update usr_table
+    set usr_nickname = #{usrNickname,jdbcType=VARCHAR},
+      usr_phone = #{usrPhone,jdbcType=VARCHAR},
+      usr_text = #{usrText,jdbcType=VARCHAR},
+      usr_money = #{usrMoney,jdbcType=BIGINT}
+    where usr_id = #{usrId,jdbcType=INTEGER}
+  </update>
+</mapper>
