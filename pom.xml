@@ -12,6 +12,8 @@
         <module>mq</module>
         <module>usrService</module>
         <module>artService</module>
+        <module>goodService</module>
+        <module>ordService</module>
     </modules>
 
     <packaging>pom</packaging>

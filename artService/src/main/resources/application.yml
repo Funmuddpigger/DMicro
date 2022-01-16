@@ -1,7 +1,7 @@
 #nacos配置方式
 spring:
   application:
-    name: usr-service
+    name: art-service
   cloud:
     nacos:
       discovery:

@@ -4,8 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class artServiceApplication {
+public class goodServiceApplication {
     public static void main(String[] args) {
-        SpringApplication.run(artServiceApplication.class,args);
+        SpringApplication.run(goodServiceApplication.class,args);
     }
 }
