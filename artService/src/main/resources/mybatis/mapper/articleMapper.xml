@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="mine.cloud.DMicro.dao.articleMapper">
-  <resultMap id="BaseResultMap" type="mine.cloud.DMicro.pojo.article">
+<mapper namespace="mine.cloud.DMicro.dao.ArticleMapper">
+  <resultMap id="BaseResultMap" type="mine.cloud.DMicro.pojo.Article">
     <id column="art_id" jdbcType="INTEGER" property="artId" />
     <result column="art_title" jdbcType="VARCHAR" property="artTitle" />
     <result column="art_postime" jdbcType="TIMESTAMP" property="artPostime" />
@@ -20,13 +20,13 @@
     delete from art_table
     where art_id = #{artId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="mine.cloud.DMicro.pojo.article">
+  <insert id="insert" parameterType="mine.cloud.DMicro.pojo.Article">
     insert into art_table (art_id, art_title, art_postime, 
       usr_id)
     values (#{artId,jdbcType=INTEGER}, #{artTitle,jdbcType=VARCHAR}, #{artPostime,jdbcType=TIMESTAMP}, 
       #{usrId,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" parameterType="mine.cloud.DMicro.pojo.article">
+  <insert id="insertSelective" parameterType="mine.cloud.DMicro.pojo.Article">
     insert into art_table
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="artId != null">
@@ -57,7 +57,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="mine.cloud.DMicro.pojo.article">
+  <update id="updateByPrimaryKeySelective" parameterType="mine.cloud.DMicro.pojo.Article">
     update art_table
     <set>
       <if test="artTitle != null">
@@ -72,7 +72,7 @@
     </set>
     where art_id = #{artId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="mine.cloud.DMicro.pojo.article">
+  <update id="updateByPrimaryKey" parameterType="mine.cloud.DMicro.pojo.Article">
     update art_table
     set art_title = #{artTitle,jdbcType=VARCHAR},
       art_postime = #{artPostime,jdbcType=TIMESTAMP},

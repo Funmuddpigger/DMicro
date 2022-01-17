@@ -7,7 +7,7 @@ import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class article {
+public class Article {
     private Integer artId;
 
     private String artTitle;
@@ -15,6 +15,8 @@ public class article {
     private Date artPostime;
 
     private Integer usrId;
+
+    private User user;
 
     public void setArtId(Integer artId) {
         this.artId = artId;

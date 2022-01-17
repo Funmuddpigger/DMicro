@@ -14,6 +14,7 @@
         <module>artService</module>
         <module>goodService</module>
         <module>ordService</module>
+        <module>common</module>
     </modules>
 
     <packaging>pom</packaging>

@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class user {
+public class User {
     private Integer usrId;
 
     private String usrNickname;

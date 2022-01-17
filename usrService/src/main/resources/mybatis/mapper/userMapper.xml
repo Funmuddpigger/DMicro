@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="mine.cloud.DMicro.dao.userMapper">
-  <resultMap id="BaseResultMap" type="mine.cloud.DMicro.pojo.user">
+<mapper namespace="mine.cloud.DMicro.dao.UserMapper">
+  <resultMap id="BaseResultMap" type="mine.cloud.DMicro.pojo.User">
     <id column="usr_id" jdbcType="INTEGER" property="usrId" />
     <result column="usr_nickname" jdbcType="VARCHAR" property="usrNickname" />
     <result column="usr_phone" jdbcType="VARCHAR" property="usrPhone" />
@@ -21,13 +21,13 @@
     delete from usr_table
     where usr_id = #{usrId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="mine.cloud.DMicro.pojo.user">
+  <insert id="insert" parameterType="mine.cloud.DMicro.pojo.User">
     insert into usr_table (usr_id, usr_nickname, usr_phone, 
       usr_text, usr_money)
     values (#{usrId,jdbcType=INTEGER}, #{usrNickname,jdbcType=VARCHAR}, #{usrPhone,jdbcType=VARCHAR}, 
       #{usrText,jdbcType=VARCHAR}, #{usrMoney,jdbcType=BIGINT})
   </insert>
-  <insert id="insertSelective" parameterType="mine.cloud.DMicro.pojo.user">
+  <insert id="insertSelective" parameterType="mine.cloud.DMicro.pojo.User">
     insert into usr_table
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="usrId != null">
@@ -64,7 +64,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="mine.cloud.DMicro.pojo.user">
+  <update id="updateByPrimaryKeySelective" parameterType="mine.cloud.DMicro.pojo.User">
     update usr_table
     <set>
       <if test="usrNickname != null">
@@ -82,7 +82,7 @@
     </set>
     where usr_id = #{usrId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="mine.cloud.DMicro.pojo.user">
+  <update id="updateByPrimaryKey" parameterType="mine.cloud.DMicro.pojo.User">
     update usr_table
     set usr_nickname = #{usrNickname,jdbcType=VARCHAR},
       usr_phone = #{usrPhone,jdbcType=VARCHAR},
