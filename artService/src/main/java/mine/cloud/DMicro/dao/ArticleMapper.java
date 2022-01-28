@@ -1,8 +1,6 @@
 package mine.cloud.DMicro.dao;
 
 import mine.cloud.DMicro.pojo.Article;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 
 public interface ArticleMapper {
@@ -11,7 +9,6 @@ public interface ArticleMapper {
     int insert(Article record);
 
     int insertSelective(Article record);
-
 
     Article selectByPrimaryKey(Integer artId);
 

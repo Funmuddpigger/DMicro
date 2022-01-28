@@ -12,6 +12,13 @@
     <artifactId>goodService</artifactId>
 
     <dependencies>
+        <!-- 引入api -->
+        <dependency>
+            <groupId>org.TumbHome</groupId>
+            <artifactId>common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.alibaba/druid-spring-boot-starter -->
         <dependency>
             <groupId>com.alibaba</groupId>

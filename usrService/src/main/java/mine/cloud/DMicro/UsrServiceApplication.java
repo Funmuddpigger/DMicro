@@ -6,7 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
-@EnableFeignClients
+@EnableFeignClients(basePackages = "mine.cloud.DMicro.feignClients")
 @MapperScan("mine.cloud.DMicro.dao")
 @SpringBootApplication(exclude = DruidDataSourceAutoConfigure.class)  //排除自动注入配置,导入手动配置
 public class UsrServiceApplication {

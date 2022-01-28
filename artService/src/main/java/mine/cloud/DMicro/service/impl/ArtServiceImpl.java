@@ -1,7 +1,7 @@
 package mine.cloud.DMicro.service.impl;
 
-import mine.cloud.DMicro.clients.UsrClient;
 import mine.cloud.DMicro.dao.ArticleMapper;
+import mine.cloud.DMicro.feignClients.UsrClient;
 import mine.cloud.DMicro.pojo.Article;
 import mine.cloud.DMicro.pojo.User;
 import mine.cloud.DMicro.service.IArtServiceApi;

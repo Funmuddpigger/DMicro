@@ -1,4 +1,5 @@
-package mine.cloud.DMicro.clients;
+package mine.cloud.DMicro.feignClients;
+
 
 import mine.cloud.DMicro.pojo.User;
 import org.springframework.cloud.openfeign.FeignClient;

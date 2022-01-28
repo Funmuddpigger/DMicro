@@ -1,5 +1,6 @@
 package mine.cloud.DMicro.dao;
 
+
 import mine.cloud.DMicro.pojo.User;
 
 public interface UserMapper {
