@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mine.cloud.DMicro.dao.CommentMapper">
+  <resultMap id="BaseResultMap" type="mine.cloud.DMicro.pojo.Comment">
+    <id column="com_id" jdbcType="INTEGER" property="comId" />
+    <result column="com_date" jdbcType="TIMESTAMP" property="comDate" />
+    <result column="usr_id" jdbcType="INTEGER" property="usrId" />
+    <result column="com_text" jdbcType="VARCHAR" property="comText" />
+    <result column="art_id" jdbcType="INTEGER" property="artId" />
+    <result column="com_par_id" jdbcType="INTEGER" property="comParId" />
+    <result column="com_like" jdbcType="BIGINT" property="comLike" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    com_id, com_date, usr_id, com_text, art_id, com_par_id, com_like
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from com_table
+    where com_id = #{comId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from com_table
+    where com_id = #{comId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="mine.cloud.DMicro.pojo.Comment">
+    insert into com_table (com_id, com_date, usr_id, 
+      com_text, art_id, com_par_id, 
+      com_like)
+    values (#{comId,jdbcType=INTEGER}, #{comDate,jdbcType=TIMESTAMP}, #{usrId,jdbcType=INTEGER}, 
+      #{comText,jdbcType=VARCHAR}, #{artId,jdbcType=INTEGER}, #{comParId,jdbcType=INTEGER}, 
+      #{comLike,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="mine.cloud.DMicro.pojo.Comment">
+    insert into com_table
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="comId != null">
+        com_id,
+      </if>
+      <if test="comDate != null">
+        com_date,
+      </if>
+      <if test="usrId != null">
+        usr_id,
+      </if>
+      <if test="comText != null">
+        com_text,
+      </if>
+      <if test="artId != null">
+        art_id,
+      </if>
+      <if test="comParId != null">
+        com_par_id,
+      </if>
+      <if test="comLike != null">
+        com_like,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="comId != null">
+        #{comId,jdbcType=INTEGER},
+      </if>
+      <if test="comDate != null">
+        #{comDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="usrId != null">
+        #{usrId,jdbcType=INTEGER},
+      </if>
+      <if test="comText != null">
+        #{comText,jdbcType=VARCHAR},
+      </if>
+      <if test="artId != null">
+        #{artId,jdbcType=INTEGER},
+      </if>
+      <if test="comParId != null">
+        #{comParId,jdbcType=INTEGER},
+      </if>
+      <if test="comLike != null">
+        #{comLike,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="mine.cloud.DMicro.pojo.Comment">
+    update com_table
+    <set>
+      <if test="comDate != null">
+        com_date = #{comDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="usrId != null">
+        usr_id = #{usrId,jdbcType=INTEGER},
+      </if>
+      <if test="comText != null">
+        com_text = #{comText,jdbcType=VARCHAR},
+      </if>
+      <if test="artId != null">
+        art_id = #{artId,jdbcType=INTEGER},
+      </if>
+      <if test="comParId != null">
+        com_par_id = #{comParId,jdbcType=INTEGER},
+      </if>
+      <if test="comLike != null">
+        com_like = #{comLike,jdbcType=BIGINT},
+      </if>
+    </set>
+    where com_id = #{comId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="mine.cloud.DMicro.pojo.Comment">
+    update com_table
+    set com_date = #{comDate,jdbcType=TIMESTAMP},
+      usr_id = #{usrId,jdbcType=INTEGER},
+      com_text = #{comText,jdbcType=VARCHAR},
+      art_id = #{artId,jdbcType=INTEGER},
+      com_par_id = #{comParId,jdbcType=INTEGER},
+      com_like = #{comLike,jdbcType=BIGINT}
+    where com_id = #{comId,jdbcType=INTEGER}
+  </update>
+</mapper>

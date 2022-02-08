@@ -16,15 +16,17 @@ public class Article {
 
     private Integer usrId;
 
+    private String artType;
+
     private User user;
 
-    public void setArtId(Integer artId) {
-        this.artId = artId;
-    }
+    private Long artLike;
 
-    public String getArtTitle() {
-        return artTitle;
-    }
+    private Long artRead;
+
+    private String artText;
+
+    private String artSummary;
 
     public void setArtTitle(String artTitle) {
         this.artTitle = artTitle == null ? null : artTitle.trim();

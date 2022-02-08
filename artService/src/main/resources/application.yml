@@ -34,7 +34,7 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
   #mapper.xml位置
-  mapper-locations: classpath*:/mybatis/mapper/**Mapper.xmlnishuo
+  mapper-locations: classpath*:/mybatis/mapper/**Mapper.xml
 redis:
   # redis数据库索引（默认为0），我们使用索引为3的数据库，避免和其他数据库冲突
   database: 3
@@ -57,3 +57,9 @@ redis:
       min-idle: 0
       # 从连接池中获取连接最大等待时间（默认为-1，单位为毫秒，负数表示无限）
       max-wait: -1
+# PageHelper 分页插件配置
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countsql

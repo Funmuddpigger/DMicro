@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="mine.cloud.DMicro.dao.goodMapper">
-  <resultMap id="BaseResultMap" type="mine.cloud.DMicro.pojo.good">
+  <resultMap id="BaseResultMap" type="mine.cloud.DMicro.pojo.Good">
     <id column="good_id" jdbcType="INTEGER" property="goodId" />
     <result column="good_name" jdbcType="VARCHAR" property="goodName" />
     <result column="good_price" jdbcType="DECIMAL" property="goodPrice" />
@@ -21,13 +21,13 @@
     delete from good_table
     where good_id = #{goodId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="mine.cloud.DMicro.pojo.good">
+  <insert id="insert" parameterType="mine.cloud.DMicro.pojo.Good">
     insert into good_table (good_id, good_name, good_price, 
       good_args, good_text)
     values (#{goodId,jdbcType=INTEGER}, #{goodName,jdbcType=VARCHAR}, #{goodPrice,jdbcType=DECIMAL}, 
       #{goodArgs,jdbcType=VARCHAR}, #{goodText,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="mine.cloud.DMicro.pojo.good">
+  <insert id="insertSelective" parameterType="mine.cloud.DMicro.pojo.Good">
     insert into good_table
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="goodId != null">
@@ -64,7 +64,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="mine.cloud.DMicro.pojo.good">
+  <update id="updateByPrimaryKeySelective" parameterType="mine.cloud.DMicro.pojo.Good">
     update good_table
     <set>
       <if test="goodName != null">
@@ -82,7 +82,7 @@
     </set>
     where good_id = #{goodId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="mine.cloud.DMicro.pojo.good">
+  <update id="updateByPrimaryKey" parameterType="mine.cloud.DMicro.pojo.Good">
     update good_table
     set good_name = #{goodName,jdbcType=VARCHAR},
       good_price = #{goodPrice,jdbcType=DECIMAL},

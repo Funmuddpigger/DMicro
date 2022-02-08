@@ -1,17 +1,17 @@
 package mine.cloud.DMicro.dao;
 
-import mine.cloud.DMicro.pojo.order;
+import mine.cloud.DMicro.pojo.Order;
 
 public interface orderMapper {
     int deleteByPrimaryKey(Integer ordId);
 
-    int insert(order record);
+    int insert(Order record);
 
-    int insertSelective(order record);
+    int insertSelective(Order record);
 
-    order selectByPrimaryKey(Integer ordId);
+    Order selectByPrimaryKey(Integer ordId);
 
-    int updateByPrimaryKeySelective(order record);
+    int updateByPrimaryKeySelective(Order record);
 
-    int updateByPrimaryKey(order record);
+    int updateByPrimaryKey(Order record);
 }

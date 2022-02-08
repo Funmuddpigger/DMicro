@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class good {
+public class Good {
     private Integer goodId;
 
     private String goodName;

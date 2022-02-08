@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="mine.cloud.DMicro.dao.orderMapper">
-  <resultMap id="BaseResultMap" type="mine.cloud.DMicro.pojo.order">
+  <resultMap id="BaseResultMap" type="mine.cloud.DMicro.pojo.Order">
     <id column="ord_id" jdbcType="INTEGER" property="ordId" />
     <result column="usr_id" jdbcType="INTEGER" property="usrId" />
     <result column="good_id" jdbcType="INTEGER" property="goodId" />
@@ -20,13 +20,13 @@
     delete from ord_table
     where ord_id = #{ordId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="mine.cloud.DMicro.pojo.order">
+  <insert id="insert" parameterType="mine.cloud.DMicro.pojo.Order">
     insert into ord_table (ord_id, usr_id, good_id, 
       ord_total)
     values (#{ordId,jdbcType=INTEGER}, #{usrId,jdbcType=INTEGER}, #{goodId,jdbcType=INTEGER}, 
       #{ordTotal,jdbcType=DECIMAL})
   </insert>
-  <insert id="insertSelective" parameterType="mine.cloud.DMicro.pojo.order">
+  <insert id="insertSelective" parameterType="mine.cloud.DMicro.pojo.Order">
     insert into ord_table
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="ordId != null">
@@ -57,7 +57,7 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="mine.cloud.DMicro.pojo.order">
+  <update id="updateByPrimaryKeySelective" parameterType="mine.cloud.DMicro.pojo.Order">
     update ord_table
     <set>
       <if test="usrId != null">
@@ -72,7 +72,7 @@
     </set>
     where ord_id = #{ordId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="mine.cloud.DMicro.pojo.order">
+  <update id="updateByPrimaryKey" parameterType="mine.cloud.DMicro.pojo.Order">
     update ord_table
     set usr_id = #{usrId,jdbcType=INTEGER},
       good_id = #{goodId,jdbcType=INTEGER},

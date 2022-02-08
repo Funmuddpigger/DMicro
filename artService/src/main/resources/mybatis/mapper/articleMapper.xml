@@ -5,16 +5,40 @@
     <id column="art_id" jdbcType="INTEGER" property="artId" />
     <result column="art_title" jdbcType="VARCHAR" property="artTitle" />
     <result column="art_postime" jdbcType="TIMESTAMP" property="artPostime" />
+    <result column="art_type" jdbcType="VARCHAR" property="artType" />
     <result column="usr_id" jdbcType="INTEGER" property="usrId" />
+    <result column="art_like" jdbcType="BIGINT" property="artLike" />
+    <result column="art_read" jdbcType="BIGINT" property="artRead" />
+    <result column="art_text" jdbcType="CLOB" property="artText" />
+    <result column="art_summary" jdbcType="VARCHAR" property="artSummary" />
   </resultMap>
   <sql id="Base_Column_List">
-    art_id, art_title, art_postime, usr_id
+    art_id, art_title, art_postime, usr_id, art_type,art_like,art_read,art_text,art_summary
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from art_table
     where art_id = #{artId,jdbcType=INTEGER}
+  </select>
+  <select id="selectBySelective" parameterType="mine.cloud.DMicro.pojo.Article" resultType="java.util.List" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from art_table
+    where
+    1=1
+    <if test="artId != null">
+      AND art_id = #{artId,jdbcType=INTEGER}
+    </if>
+    <if test="artTitle != null">
+      AND art_title like  CONCAT ('%',#{artTitle,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="artPostime != null">
+      AND art_postime = #{artPostime,jdbcType=TIMESTAMP}
+    </if>
+    <if test="usrId != null">
+      AND usr_id = #{usrId,jdbcType=INTEGER}
+    </if>
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from art_table

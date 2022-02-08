@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class order {
+public class Order {
     private Integer ordId;
 
     private Integer usrId;
