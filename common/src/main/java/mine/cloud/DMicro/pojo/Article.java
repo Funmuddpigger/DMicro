@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -27,6 +28,7 @@ public class Article {
     private String artText;
 
     private String artSummary;
+
 
     public void setArtTitle(String artTitle) {
         this.artTitle = artTitle == null ? null : artTitle.trim();

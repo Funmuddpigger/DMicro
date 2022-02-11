@@ -17,6 +17,4 @@ public interface ArticleMapper {
     List<Article> selectBySelective(Article record);
 
     int updateByPrimaryKeySelective(Article record);
-
-    int updateByPrimaryKey(Article record);
 }

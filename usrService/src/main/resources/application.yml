@@ -6,7 +6,9 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
-#        cluster-name: xx #自定义集群名称
+      config:
+        server-addr: localhost:8848
+  #        cluster-name: xx #自定义集群名称
 #  配置文件配置：
   datasource:
     # 配置数据源类型

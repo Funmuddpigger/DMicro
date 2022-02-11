@@ -50,7 +50,7 @@
     values (#{artId,jdbcType=INTEGER}, #{artTitle,jdbcType=VARCHAR}, #{artPostime,jdbcType=TIMESTAMP}, 
       #{usrId,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" parameterType="mine.cloud.DMicro.pojo.Article">
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="artId"  parameterType="mine.cloud.DMicro.pojo.Article">
     insert into art_table
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="artId != null">
@@ -64,6 +64,21 @@
       </if>
       <if test="usrId != null">
         usr_id,
+      </if>
+      <if test="artType != null">
+        art_Type,
+      </if>
+      <if test="artLike != null">
+        art_like,
+      </if>
+      <if test="artRead != null">
+        art_read,
+      </if>
+      <if test="artText != null">
+        art_text,
+      </if>
+      <if test="artSummary != null">
+        art_summary,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -79,6 +94,21 @@
       <if test="usrId != null">
         #{usrId,jdbcType=INTEGER},
       </if>
+      <if test="artType != null">
+        #{artType,jdbcType=VARCHAR},
+      </if>
+      <if test="artLike != null">
+        #{artLike,jdbcType=BIGINT},
+      </if>
+      <if test="artRead != null">
+        #{artRead,jdbcType=BIGINT},
+      </if>
+      <if test="artText != null">
+        #{artText,jdbcType=CLOB},
+      </if>
+      <if test="artSummary != null">
+        #{artSummary,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="mine.cloud.DMicro.pojo.Article">
@@ -93,14 +123,22 @@
       <if test="usrId != null">
         usr_id = #{usrId,jdbcType=INTEGER},
       </if>
+      <if test="artType != null">
+        art_type = #{artType,jdbcType=VARCHAR},
+      </if>
+      <if test="artLike != null">
+        art_like = #{artLike,jdbcType=BIGINT},
+      </if>
+      <if test="artRead != null">
+        art_read = #{artRead,jdbcType=BIGINT},
+      </if>
+      <if test="artText != null">
+        art_text = #{artText,jdbcType=CLOB},
+      </if>
+      <if test="artSummary != null">
+        art_summary = #{artSummary,jdbcType=VARCHAR},
+      </if>
     </set>
-    where art_id = #{artId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="mine.cloud.DMicro.pojo.Article">
-    update art_table
-    set art_title = #{artTitle,jdbcType=VARCHAR},
-      art_postime = #{artPostime,jdbcType=TIMESTAMP},
-      usr_id = #{usrId,jdbcType=INTEGER}
     where art_id = #{artId,jdbcType=INTEGER}
   </update>
 </mapper>

@@ -52,7 +52,7 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-openfeign -->
+        <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-openfeign-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
@@ -76,6 +76,11 @@
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-high-level-client</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-amqp -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
 
     </dependencies>
@@ -101,12 +106,6 @@
                         <artifactId>mysql-connector-java</artifactId>
                         <version>8.0.21</version>
                     </dependency>
-<!--                    &lt;!&ndash; https://mvnrepository.com/artifact/com.github.pagehelper/pagehelper-spring-boot-starter &ndash;&gt;-->
-<!--                    <dependency>-->
-<!--                        <groupId>com.github.pagehelper</groupId>-->
-<!--                        <artifactId>pagehelper-spring-boot-starter</artifactId>-->
-<!--                        <version></version>-->
-<!--                    </dependency>-->
                 </dependencies>
             </plugin>
         </plugins>

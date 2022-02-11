@@ -2,6 +2,15 @@
 spring:
   application:
     name: art-service
+  rabbitmq:
+    host: 119.23.78.113 #主机名
+    port: 5672
+    virtual-host: / #虚拟主机
+    username: root #用户名
+    password: nibaba #密码
+    listener:
+      simple:
+        prefetch: 1 #每次只能获取一条消息,处理完成才能获取下一个
   cloud:
     nacos:
       discovery:
