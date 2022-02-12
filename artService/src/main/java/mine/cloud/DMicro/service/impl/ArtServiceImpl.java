@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -119,6 +120,7 @@ public class ArtServiceImpl implements IArtServiceApi  {
     @Override
     public List<String> getESSuggestWord(String suggestKey) {
         try {
+            suggestKey = URLDecoder.decode(suggestKey,"UTF-8");
             //Request
             SearchRequest request = new SearchRequest("article");
             //DSL,去重,补全词条个数
@@ -226,12 +228,12 @@ public class ArtServiceImpl implements IArtServiceApi  {
         SearchHit[] hits1 = searchHits.getHits();
 
         //遍历 反序列化
-        List<Article> data = new ArrayList<>();
+        List<ArticleDoc> data = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
         for (SearchHit h : hits1) {
             String json = h.getSourceAsString();
-            Article article = mapper.readValue(json, Article.class);
-            data.add(article);
+            ArticleDoc articleDoc = mapper.readValue(json, ArticleDoc.class);
+            data.add(articleDoc);
         }
         res.setData(data);
         return res;
