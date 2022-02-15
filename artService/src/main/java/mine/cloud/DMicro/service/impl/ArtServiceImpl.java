@@ -16,6 +16,7 @@ import mine.cloud.DMicro.utils.Result;
 import mine.cloud.DMicro.utils.StringHelperUtils;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.resync.ResyncReplicationRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -217,6 +218,15 @@ public class ArtServiceImpl implements IArtServiceApi  {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Result getSelectBySelectives(Article params) {
+        Result res = new Result();
+        res.setCode(HttpStatusCode.HTTP_OK);
+        res.setMsg("ok");
+        res.setData(articleMapper.selectBySelective(params));
+        return res;
     }
 
     private Result handleResponse(SearchResponse response) throws com.fasterxml.jackson.core.JsonProcessingException {

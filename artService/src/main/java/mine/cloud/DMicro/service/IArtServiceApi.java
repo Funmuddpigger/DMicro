@@ -35,4 +35,6 @@ public interface IArtServiceApi {
     void esArtDelete(Integer artId);
 
     void esArtInsertOrUpdate(Article article);
+
+    Result getSelectBySelectives(Article params);
 }

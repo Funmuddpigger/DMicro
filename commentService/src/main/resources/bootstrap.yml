@@ -1,0 +1,18 @@
+spring:
+  nacos-host: 47.113.205.0
+  nacos-port: 8848
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: com-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${spring.nacos-host}:${spring.nacos-port}
+        userName: "nacos"
+        password: "nacos"
+      config:
+        server-addr: ${spring.nacos-host}:${spring.nacos-port}
+        userName: "nacos"
+        password: "nacos"
+        file-extension: yaml

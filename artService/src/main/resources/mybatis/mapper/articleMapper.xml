@@ -39,6 +39,21 @@
     <if test="usrId != null">
       AND usr_id = #{usrId,jdbcType=INTEGER}
     </if>
+    <if test="artType != null">
+      AND art_type = #{artType,jdbcType=VARCHAR}
+    </if>
+    <if test="artLike != null">
+      AND art_like = #{artLike,jdbcType=BIGINT}
+    </if>
+    <if test="artRead != null">
+      AND art_read #{artRead,jdbcType=BIGINT}
+    </if>
+    <if test="artText != null">
+      AND art_text = #{artText,jdbcType=CLOB}
+    </if>
+    <if test="artSummary != null">
+      AND art_summary = #{artSummary,jdbcType=VARCHAR}
+    </if>
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from art_table

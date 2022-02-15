@@ -6,7 +6,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848
+        server-addr: 47.113.205.0:3306:8848
     gateway:
       routes:
         - id: r-xxxservice #第一个路由标识,必须唯一

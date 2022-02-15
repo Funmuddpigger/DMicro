@@ -33,6 +33,12 @@ public class ArticleController {
     }
 
     //文章自动补全功能
+    @RequestMapping(value = "/select",method = {RequestMethod.GET,RequestMethod.POST})
+    public Result getSuggestions(@RequestBody Article params){
+        return iArtServiceApi.getSelectBySelectives(params);
+    }
+
+    //文章自动补全功能
     @RequestMapping(value = "/suggest",method = {RequestMethod.GET,RequestMethod.POST})
     public List<String> getSuggestions(@RequestParam("suggestKey") String suggestKey){
         return iArtServiceApi.getESSuggestWord(suggestKey);
