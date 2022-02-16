@@ -6,6 +6,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import mine.cloud.DMicro.dao.ArticleMapper;
 import mine.cloud.DMicro.doc.ArticleDoc;
+import mine.cloud.DMicro.doc.HotwordDoc;
 import mine.cloud.DMicro.feignClients.UsrClient;
 import mine.cloud.DMicro.mqQueueType.MqStaticType;
 import mine.cloud.DMicro.pojo.Article;
@@ -26,23 +27,28 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
+import org.elasticsearch.search.aggregations.Aggregation;
+import org.elasticsearch.search.aggregations.AggregationBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilders;
 import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
+
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.URLDecoder;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+
 
 @Service
 public class ArtServiceImpl implements IArtServiceApi  {
@@ -50,6 +56,9 @@ public class ArtServiceImpl implements IArtServiceApi  {
     //注入mapper
     @Autowired
     private ArticleMapper articleMapper;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
@@ -82,10 +91,18 @@ public class ArtServiceImpl implements IArtServiceApi  {
         return article;
     }
 
+    /**
+     * 搜索 ---发送至es
+     * @param word
+     * @param page
+     * @param pageSize
+     * @param sortBy
+     * @param upDown
+     * @return
+     */
     @Override
     public Result selectByESKeyWord(String word, Integer page, Integer pageSize,String sortBy,String upDown) {
         try {
-
             //Request
             SearchRequest request = new SearchRequest("article");
             //DSL
@@ -93,7 +110,16 @@ public class ArtServiceImpl implements IArtServiceApi  {
             if (!StringHelperUtils.isNotEmpty(word)) {
                 boolQuery.must(QueryBuilders.matchAllQuery());
             } else {
-               boolQuery.must(QueryBuilders.matchQuery("searchText", word));
+                //word添加到hotwords index ---id由ES决定,随机,不会导致重复插入丢失数据
+                IndexRequest hotRequest = new IndexRequest("hotwords");
+                ObjectMapper mapper = new ObjectMapper();
+                //创建hotword对象
+                Date datetime = new Date();
+                HotwordDoc hotwordDoc = new HotwordDoc(word, datetime);
+                hotRequest.source(mapper.writeValueAsString(hotwordDoc), XContentType.JSON);
+                //发送请求---插入hotword
+                client.index(hotRequest, RequestOptions.DEFAULT);
+                boolQuery.must(QueryBuilders.matchQuery("searchText", word));
             }
             //条件过滤----排序
             if(StringHelperUtils.isNotEmpty(sortBy)){
@@ -118,6 +144,11 @@ public class ArtServiceImpl implements IArtServiceApi  {
         }
     }
 
+    /**
+     * 搜索建议---发送至es
+     * @param suggestKey
+     * @return
+     */
     @Override
     public List<String> getESSuggestWord(String suggestKey) {
         try {
@@ -149,6 +180,48 @@ public class ArtServiceImpl implements IArtServiceApi  {
         }
     }
 
+    /**
+     * 获取最热列表---发送至es
+     * @return
+     */
+    @Override
+    public Result getHotArticleList() {
+        try {
+            Result res = new Result();
+            //request
+            SearchRequest request = new SearchRequest("hotwords");
+            //DSL---设置只显示agg的数据
+            request.source().size(0);
+            request.source().aggregation(AggregationBuilders
+                    .terms("hotWord")
+                    .field("searchText")
+                    .size(5)
+            );
+            //发送请求
+            SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+            Aggregations aggregations = response.getAggregations();
+            Terms titleTerms = aggregations.get("hotWord");
+            List<? extends Terms.Bucket> buckets = titleTerms.getBuckets();
+            ArrayList<String> titles = new ArrayList<>();
+            //遍历
+            for(Terms.Bucket bucket : buckets){
+                String title = bucket.getKeyAsString();
+                titles.add(title);
+            }
+            res.setData(titles);
+            res.setCode(HttpStatusCode.HTTP_OK);
+            res.setMsg("ok");
+            return res;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 文章保存
+     * @param article
+     * @return
+     */
     @Override
     public Result saveArticle(Article article) {
         Result res = new Result();
@@ -167,6 +240,11 @@ public class ArtServiceImpl implements IArtServiceApi  {
         return res;
     }
 
+    /**
+     * 文章更新
+     * @param article
+     * @return
+     */
     @Override
     public Result updateArticle(Article article) {
         Result res = new Result();
@@ -178,6 +256,11 @@ public class ArtServiceImpl implements IArtServiceApi  {
         return res;
     }
 
+    /**
+     * 文章删除
+     * @param id
+     * @return
+     */
     @Override
     public Result deleteArticle(Integer id) {
         Result res = new Result();
@@ -191,8 +274,12 @@ public class ArtServiceImpl implements IArtServiceApi  {
         return res;
     }
 
+    /**
+     * mq,redis同步接口
+     * @param id
+     */
     @Override
-    public void esArtDelete(Integer id) {
+    public void esRedisArtDelete(Integer id) {
         try {
             //request
             DeleteRequest request = new DeleteRequest("article", id.toString());
@@ -203,11 +290,19 @@ public class ArtServiceImpl implements IArtServiceApi  {
         }
     }
 
+
+    /**
+     * mq,redis同步接口
+     * @param article
+     */
     @Override
-    public void esArtInsertOrUpdate(Article article) {
+    public void esRedisArtInsertOrUpdate(Article article) {
         try {
             //request
             IndexRequest request = new IndexRequest("article").id(article.getArtId().toString());
+            //同步更新art_title
+            redisTemplate.opsForList().leftPush("newArticle",article.getArtTitle());
+            redisTemplate.opsForList().trim("newArticle",0,9);
             //JSON
             ArticleDoc articleDoc = new ArticleDoc(article);
             ObjectMapper mapper = new ObjectMapper();
@@ -220,6 +315,11 @@ public class ArtServiceImpl implements IArtServiceApi  {
         }
     }
 
+    /**
+     * 查找,通过msql
+     * @param params
+     * @return
+     */
     @Override
     public Result getSelectBySelectives(Article params) {
         Result res = new Result();
@@ -228,6 +328,18 @@ public class ArtServiceImpl implements IArtServiceApi  {
         res.setData(articleMapper.selectBySelective(params));
         return res;
     }
+
+    @Override
+    public Result getNewArticle() {
+        Result res = new Result();
+        res.setCode(HttpStatusCode.HTTP_OK);
+        res.setMsg("ok");
+        List<String> mylist = redisTemplate.opsForList().range("mylist", 0, 4);
+        res.setData(mylist);
+        return res;
+    }
+
+
 
     private Result handleResponse(SearchResponse response) throws com.fasterxml.jackson.core.JsonProcessingException {
         Result res = new Result();

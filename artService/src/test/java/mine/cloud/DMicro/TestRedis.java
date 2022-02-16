@@ -17,4 +17,14 @@ public class TestRedis {
         Object res =  redisTemplate.opsForValue().get("1111aaa");
         System.out.println(res);
     }
+
+    @Test
+    public void testRedisList(){
+        //redisTemplate.opsForList().leftPush("mylist","Z");
+
+
+        redisTemplate.opsForList().trim("mylist",0,0);
+        System.out.println(redisTemplate.opsForList().range("mylist",0,9));
+
+    }
 }

@@ -1,8 +1,11 @@
 package mine.cloud.DMicro.doc;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import mine.cloud.DMicro.pojo.Article;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -16,6 +19,8 @@ public class ArticleDoc {
 
     private String artTitle;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
+    @Field(type = FieldType.Date)
     private Date artPostime;
 
     private Integer usrId;

@@ -1,4 +1,4 @@
-package mine.cloud.DMicro.ma;
+package mine.cloud.DMicro.mq;
 
 import mine.cloud.DMicro.mqQueueType.MqStaticType;
 import mine.cloud.DMicro.pojo.Article;
@@ -19,7 +19,7 @@ public class ArticleMqListener {
      */
     @RabbitListener(queues = MqStaticType.ARTICLE_INSERT_CHANGE_QUEUE)
     public void listenArticleInsertOrUpdate(Article article){
-        artServiceApi.esArtInsertOrUpdate(article);
+        artServiceApi.esRedisArtInsertOrUpdate(article);
     }
 
     /**
@@ -27,6 +27,6 @@ public class ArticleMqListener {
      */
     @RabbitListener(queues = MqStaticType.ARTICLE_DEL_QUEUE)
     public void listenArticleDelete(Integer id){
-        artServiceApi.esArtDelete(id);
+        artServiceApi.esRedisArtDelete(id);
     }
 }

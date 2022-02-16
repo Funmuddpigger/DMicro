@@ -32,9 +32,13 @@ public interface IArtServiceApi {
     //del
     Result deleteArticle(Integer id);
 
-    void esArtDelete(Integer artId);
+    void esRedisArtDelete(Integer artId);
 
-    void esArtInsertOrUpdate(Article article);
+    void esRedisArtInsertOrUpdate(Article article);
 
     Result getSelectBySelectives(Article params);
+
+    Result getHotArticleList();
+
+    Result getNewArticle();
 }

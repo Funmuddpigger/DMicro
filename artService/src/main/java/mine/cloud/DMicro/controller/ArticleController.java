@@ -32,9 +32,9 @@ public class ArticleController {
         return iArtServiceApi.selectByESKeyWord(params.getKey(), params.getPage(), params.getPageSize(),params.getSortBy(),params.getUpDown());
     }
 
-    //文章自动补全功能
+    //文章多条件搜索--mysql
     @RequestMapping(value = "/select",method = {RequestMethod.GET,RequestMethod.POST})
-    public Result getSuggestions(@RequestBody Article params){
+    public Result getSelectBySelectives(@RequestBody Article params){
         return iArtServiceApi.getSelectBySelectives(params);
     }
 
@@ -42,6 +42,20 @@ public class ArticleController {
     @RequestMapping(value = "/suggest",method = {RequestMethod.GET,RequestMethod.POST})
     public List<String> getSuggestions(@RequestParam("suggestKey") String suggestKey){
         return iArtServiceApi.getESSuggestWord(suggestKey);
+    }
+
+    //文章热榜功能
+    @RequestMapping(value = "/hot-article",method = {RequestMethod.GET,RequestMethod.POST})
+    public Result getHotArticleList(){
+        Result hotArticleList = iArtServiceApi.getHotArticleList();
+        System.out.println(hotArticleList.getData());
+        return hotArticleList;
+    }
+
+    //文章热榜功能
+    @RequestMapping(value = "/new-article",method = {RequestMethod.GET,RequestMethod.POST})
+    public Result getNewArticle(){
+        return iArtServiceApi.getNewArticle();
     }
 
     //文章添加功能 

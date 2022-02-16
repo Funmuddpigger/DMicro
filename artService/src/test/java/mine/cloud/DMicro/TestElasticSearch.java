@@ -20,10 +20,15 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.BucketOrder;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortOrder;
-import org.elasticsearch.search.suggest.Suggest;
 import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilders;
 import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
@@ -35,6 +40,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +61,7 @@ public class TestElasticSearch {
         //根据ID查询数据
         Article article = iArtServiceApi.selectByPrimaryKey(artId);
         //准备Request对象
-        IndexRequest request = new IndexRequest("article").id(artId.toString());
+        IndexRequest request = new IndexRequest("article").id("100");
         ArticleDoc articleDoc = new ArticleDoc(article);
         //转json
         ObjectMapper mapper = new ObjectMapper();
@@ -136,6 +142,32 @@ public class TestElasticSearch {
         //解析结果
         handleResponse(response);
     }
+    @Test
+    void  searchHotWord() throws IOException {
+
+            SearchRequest searchRequest = new SearchRequest("article");//indexName是索引名称
+            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+            searchSourceBuilder.query(QueryBuilders.matchAllQuery());
+            searchRequest.source(searchSourceBuilder);
+            //聚合分析查询出现次数最多的10个词汇，hotWord是聚合名称，name是es的字段名
+            TermsAggregationBuilder keyword_agg = AggregationBuilders.terms("hotWord").field("name").size(10).order(BucketOrder.count(false));
+            searchSourceBuilder.aggregation(keyword_agg);
+            searchRequest.source(searchSourceBuilder);
+            SearchResponse response = client.search(searchRequest, RequestOptions.DEFAULT);
+            Aggregations aggregations = response.getAggregations();
+
+            Terms term = aggregations.get("hotWord");
+            List<Terms.Bucket> buckets = (List<Terms.Bucket>) term.getBuckets();
+            List<String> hotWords = new ArrayList<>();
+            for (Terms.Bucket bucket : buckets) {
+                String key = (String) bucket.getKey();
+                long docCount = bucket.getDocCount();
+                hotWords.add(key);
+                System.out.println("热词:"+key+"数量为："+docCount);
+            }
+
+    }
+
 
     @Test
     void testPageAndSort() throws IOException {
@@ -214,6 +246,7 @@ public class TestElasticSearch {
             System.out.println(article);
         }
     }
+
 
     @Test
     public void testInit(){
