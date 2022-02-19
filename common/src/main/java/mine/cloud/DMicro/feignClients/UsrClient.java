@@ -11,4 +11,5 @@ public interface UsrClient {
 
     @GetMapping("/user/{id}")
     User selectByPK(@PathVariable("id") Integer usrId);
+
 }

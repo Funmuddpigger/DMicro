@@ -1,8 +1,9 @@
 package mine.cloud.DMicro.service;
 
-import com.github.pagehelper.PageInfo;
+import mine.cloud.DMicro.params.RequestParamsESArt;
 import mine.cloud.DMicro.pojo.Article;
 import mine.cloud.DMicro.utils.Result;
+import mine.cloud.DMicro.utils.ResultList;
 
 import java.util.List;
 
@@ -19,26 +20,28 @@ public interface IArtServiceApi {
     Article selectByPKWithUsr(Integer artId);
 
     //select by KeyWord
-    Result selectByESKeyWord(String word, Integer page, Integer pageSize,String sortBy,String upDown);
+    ResultList selectByESKeyWord(String word, Integer page, Integer pageSize, String sortBy, String upDown);
 
     List<String> getESSuggestWord(String suggestKey);
 
     //insert
-    Result saveArticle(Article article);
+    ResultList saveArticle(Article article);
 
     //uodate
-    Result updateArticle(Article article);
+    ResultList updateArticle(Article article);
 
     //del
-    Result deleteArticle(Integer id);
+    ResultList deleteArticle(Integer id);
 
     void esRedisArtDelete(Integer artId);
 
     void esRedisArtInsertOrUpdate(Article article);
 
-    Result getSelectBySelectives(Article params);
+    ResultList getSelectBySelectives(Article params);
 
-    Result getHotArticleList();
+    ResultList getHotArticleList();
 
-    Result getNewArticle();
+    ResultList getNewArticle();
+
+    ResultList getESArticleByTitleOrType(RequestParamsESArt params);
 }

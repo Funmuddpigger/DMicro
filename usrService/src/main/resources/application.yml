@@ -31,7 +31,6 @@ spring:
     filters: stat,wall,
 server:
   port: 5050
-峰
 mybatis:
   configuration:
     map-underscore-to-camel-case: true

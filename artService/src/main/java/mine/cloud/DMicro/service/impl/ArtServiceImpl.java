@@ -1,23 +1,23 @@
 package mine.cloud.DMicro.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import mine.cloud.DMicro.dao.ArticleMapper;
 import mine.cloud.DMicro.doc.ArticleDoc;
 import mine.cloud.DMicro.doc.HotwordDoc;
+import mine.cloud.DMicro.feignClients.ComClient;
 import mine.cloud.DMicro.feignClients.UsrClient;
 import mine.cloud.DMicro.mqQueueType.MqStaticType;
+import mine.cloud.DMicro.params.RequestParamsESArt;
 import mine.cloud.DMicro.pojo.Article;
+import mine.cloud.DMicro.pojo.Comment;
 import mine.cloud.DMicro.pojo.User;
 import mine.cloud.DMicro.service.IArtServiceApi;
 import mine.cloud.DMicro.utils.HttpStatusCode;
 import mine.cloud.DMicro.utils.Result;
+import mine.cloud.DMicro.utils.ResultList;
 import mine.cloud.DMicro.utils.StringHelperUtils;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.resync.ResyncReplicationRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -27,8 +27,6 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.aggregations.Aggregation;
-import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
@@ -43,7 +41,6 @@ import org.springframework.stereotype.Service;
 
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,7 +49,12 @@ import java.util.List;
 
 @Service
 public class ArtServiceImpl implements IArtServiceApi  {
+    //注入Feign
+    @Autowired
+    private UsrClient usrClient;
 
+    @Autowired
+    private ComClient comClient;
     //注入mapper
     @Autowired
     private ArticleMapper articleMapper;
@@ -62,9 +64,6 @@ public class ArtServiceImpl implements IArtServiceApi  {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
-
-    @Autowired
-    private UsrClient usrClient;
 
     @Autowired
     private RestHighLevelClient client;
@@ -101,8 +100,9 @@ public class ArtServiceImpl implements IArtServiceApi  {
      * @return
      */
     @Override
-    public Result selectByESKeyWord(String word, Integer page, Integer pageSize,String sortBy,String upDown) {
+    public ResultList selectByESKeyWord(String word, Integer page, Integer pageSize, String sortBy, String upDown) {
         try {
+            ResultList res = new ResultList();
             //Request
             SearchRequest request = new SearchRequest("article");
             //DSL
@@ -135,10 +135,11 @@ public class ArtServiceImpl implements IArtServiceApi  {
             //发送请求--全文检索查询
             SearchResponse response = client.search(request, RequestOptions.DEFAULT);
             //解析拿到res,返回
-            Result result = handleResponse(response);
-            result.setCode(HttpStatusCode.HTTP_OK);
-            result.setMsg("ok");
-            return result;
+            List<ArticleDoc> articleDocs = handleResponse(response);
+            res.setData(articleDocs);
+            res.setCode(HttpStatusCode.HTTP_OK);
+            res.setMsg("ok");
+            return res;
         } catch (IOException e) {
            throw new RuntimeException(e);
         }
@@ -181,13 +182,66 @@ public class ArtServiceImpl implements IArtServiceApi  {
     }
 
     /**
+     * 搜索文章----es by title
+     * @param params
+     * @return
+     */
+    @Override
+    public ResultList getESArticleByTitleOrType(RequestParamsESArt params) {
+        try {
+            ResultList res = new ResultList();
+            String title = params.getTitle();
+            String type = params.getType();
+            //request
+            SearchRequest request = new SearchRequest("article");
+            //DSL---必须匹配title
+            BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
+            if(!StringHelperUtils.isNotEmpty(title)){
+                boolQueryBuilder.must(QueryBuilders.matchAllQuery());
+            }else{
+                boolQueryBuilder.must(QueryBuilders.termQuery("artTitle.title",title));
+            }
+            //DSL---必须匹配type
+            if(StringHelperUtils.isNotEmpty(type)){
+                boolQueryBuilder.must(QueryBuilders.termQuery("artType.type",type));
+            }
+            //merge
+            request.source().query(boolQueryBuilder);
+            //res
+            SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+            List<ArticleDoc> articleDocs = handleResponse(response);
+            //if size >= 1 get first
+            ArticleDoc articleDoc = articleDocs.get(0);
+            res.setData(articleDocs);
+            //if have title comment
+            if(StringHelperUtils.isNotEmpty(title)){
+                Integer artId = articleDoc.getArtId();
+                Comment comment = new Comment();
+                comment.setArtId(artId);
+                ResultList resComList = comClient.selectCommentBySelectives(comment);
+
+                if(resComList.getCode()==HttpStatusCode.HTTP_OK){
+                    res.setData(resComList.getData());
+                }
+            }
+
+            res.setOneData(articleDoc);
+            res.setCode(HttpStatusCode.HTTP_OK);
+            res.setMsg("ok");
+            return res;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * 获取最热列表---发送至es
      * @return
      */
     @Override
-    public Result getHotArticleList() {
+    public ResultList getHotArticleList() {
         try {
-            Result res = new Result();
+            ResultList res = new ResultList();
             //request
             SearchRequest request = new SearchRequest("hotwords");
             //DSL---设置只显示agg的数据
@@ -223,8 +277,8 @@ public class ArtServiceImpl implements IArtServiceApi  {
      * @return
      */
     @Override
-    public Result saveArticle(Article article) {
-        Result res = new Result();
+    public ResultList saveArticle(Article article) {
+        ResultList res = new ResultList();
         res.setCode(HttpStatusCode.HTTP_OK);
         article.setArtPostime(new Date());
         article.setArtLike(0L);
@@ -246,8 +300,8 @@ public class ArtServiceImpl implements IArtServiceApi  {
      * @return
      */
     @Override
-    public Result updateArticle(Article article) {
-        Result res = new Result();
+    public ResultList updateArticle(Article article) {
+        ResultList res = new ResultList();
         res.setCode(HttpStatusCode.HTTP_OK);
         res.setMsg("ok");
         articleMapper.updateByPrimaryKeySelective(article);
@@ -262,8 +316,8 @@ public class ArtServiceImpl implements IArtServiceApi  {
      * @return
      */
     @Override
-    public Result deleteArticle(Integer id) {
-        Result res = new Result();
+    public ResultList deleteArticle(Integer id) {
+        ResultList res = new ResultList();
         articleMapper.deleteByPrimaryKey(id);
         res.setMsg("ok");
         res.setCode(HttpStatusCode.HTTP_OK);
@@ -310,6 +364,7 @@ public class ArtServiceImpl implements IArtServiceApi  {
             request.source(mapper.writeValueAsString(articleDoc), XContentType.JSON);
             //send
             client.index(request,RequestOptions.DEFAULT);
+            System.out.println("同步es,redis成功");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -321,8 +376,8 @@ public class ArtServiceImpl implements IArtServiceApi  {
      * @return
      */
     @Override
-    public Result getSelectBySelectives(Article params) {
-        Result res = new Result();
+    public ResultList getSelectBySelectives(Article params) {
+        ResultList res = new ResultList();
         res.setCode(HttpStatusCode.HTTP_OK);
         res.setMsg("ok");
         res.setData(articleMapper.selectBySelective(params));
@@ -330,19 +385,18 @@ public class ArtServiceImpl implements IArtServiceApi  {
     }
 
     @Override
-    public Result getNewArticle() {
-        Result res = new Result();
+    public ResultList getNewArticle() {
+        ResultList res = new ResultList();
         res.setCode(HttpStatusCode.HTTP_OK);
         res.setMsg("ok");
-        List<String> mylist = redisTemplate.opsForList().range("mylist", 0, 4);
+        List<String> mylist = redisTemplate.opsForList().range("newArticle", 0, 4);
         res.setData(mylist);
         return res;
     }
 
 
-
-    private Result handleResponse(SearchResponse response) throws com.fasterxml.jackson.core.JsonProcessingException {
-        Result res = new Result();
+    private List<ArticleDoc> handleResponse(SearchResponse response) throws com.fasterxml.jackson.core.JsonProcessingException {
+        ResultList res = new ResultList();
         SearchHits searchHits = response.getHits();
         //得到文档总条数
         long total = searchHits.getTotalHits().value;
@@ -357,7 +411,6 @@ public class ArtServiceImpl implements IArtServiceApi  {
             ArticleDoc articleDoc = mapper.readValue(json, ArticleDoc.class);
             data.add(articleDoc);
         }
-        res.setData(data);
-        return res;
+        return data;
     }
 }
