@@ -7,15 +7,41 @@
     <result column="usr_phone" jdbcType="VARCHAR" property="usrPhone" />
     <result column="usr_text" jdbcType="VARCHAR" property="usrText" />
     <result column="usr_money" jdbcType="BIGINT" property="usrMoney" />
+    <result column="usr_create_time" jdbcType="TIMESTAMP" property="usrCreateTime" />
+    <result column="usr_password" jdbcType="VARCHAR" property="usrPassword" />
   </resultMap>
   <sql id="Base_Column_List">
-    usr_id, usr_nickname, usr_phone, usr_text, usr_money
+    usr_id, usr_nickname, usr_phone, usr_text, usr_money, usr_create_time, usr_password
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from usr_table
     where usr_id = #{usrId,jdbcType=INTEGER}
+  </select>
+  <select id="selectOneBySelective" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from usr_table
+    where 1=1
+    <if test="usrNickname != null">
+    AND  usr_nickname = #{usrNickname,jdbcType=VARCHAR}
+    </if>
+    <if test="usrPhone != null">
+    AND  usr_phone = #{usrPhone,jdbcType=VARCHAR}
+    </if>
+    <if test="usrText != null">
+    AND  usr_text = #{usrText,jdbcType=VARCHAR}
+    </if>
+    <if test="usrMoney != null">
+    AND  usr_money = #{usrMoney,jdbcType=BIGINT}
+    </if>
+    <if test="usrCreateTime != null">
+    AND  usr_create_time = #{usrCreateTime,jdbcType=TIMESTAMP}
+    </if>
+    <if test="usrPassword != null">
+    AND  usr_password = #{usrPassword,jdbcType=VARCHAR}
+    </if>
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from usr_table
@@ -27,7 +53,7 @@
     values (#{usrId,jdbcType=INTEGER}, #{usrNickname,jdbcType=VARCHAR}, #{usrPhone,jdbcType=VARCHAR}, 
       #{usrText,jdbcType=VARCHAR}, #{usrMoney,jdbcType=BIGINT})
   </insert>
-  <insert id="insertSelective" parameterType="mine.cloud.DMicro.pojo.User">
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="usrId" parameterType="mine.cloud.DMicro.pojo.User">
     insert into usr_table
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="usrId != null">
@@ -44,6 +70,12 @@
       </if>
       <if test="usrMoney != null">
         usr_money,
+      </if>
+      <if test="usrCreateTime != null">
+        usr_create_time,
+      </if>
+      <if test="usrPassword != null">
+        usr_password,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -62,6 +94,12 @@
       <if test="usrMoney != null">
         #{usrMoney,jdbcType=BIGINT},
       </if>
+      <if test="usrCreateTime != null">
+        #{usrCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="usrPassword != null">
+        #{usrPassword,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="mine.cloud.DMicro.pojo.User">
@@ -79,15 +117,13 @@
       <if test="usrMoney != null">
         usr_money = #{usrMoney,jdbcType=BIGINT},
       </if>
+      <if test="usrCreateTime != null">
+        usr_create_time = #{usrCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="usrPassword != null">
+        usr_password = #{usrPassword,jdbcType=VARCHAR},
+      </if>
     </set>
-    where usr_id = #{usrId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="mine.cloud.DMicro.pojo.User">
-    update usr_table
-    set usr_nickname = #{usrNickname,jdbcType=VARCHAR},
-      usr_phone = #{usrPhone,jdbcType=VARCHAR},
-      usr_text = #{usrText,jdbcType=VARCHAR},
-      usr_money = #{usrMoney,jdbcType=BIGINT}
     where usr_id = #{usrId,jdbcType=INTEGER}
   </update>
 </mapper>

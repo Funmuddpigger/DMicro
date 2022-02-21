@@ -3,6 +3,8 @@ package mine.cloud.DMicro.dao;
 
 import mine.cloud.DMicro.pojo.User;
 
+import java.util.List;
+
 public interface UserMapper {
     int deleteByPrimaryKey(Integer usrId);
 
@@ -14,5 +16,5 @@ public interface UserMapper {
 
     int updateByPrimaryKeySelective(User record);
 
-    int updateByPrimaryKey(User record);
+    User selectOneBySelective(User record);
 }

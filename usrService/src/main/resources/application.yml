@@ -29,6 +29,28 @@ spring:
     validationQuery: SELECT 1 FROM dual
     # 配置监控统计拦截的filters,去掉后，监控界面的sql无法统计
     filters: stat,wall,
+  redis:
+    # redis服务器地址（默认为localhost）
+    host: 47.113.205.0
+    # redis端口（默认为6379）
+    port: 6379
+    # redis访问密码（默认为空）
+    password:
+    # redis连接超时时间（单位为毫秒）
+    timeout: 2000
+    # redis连接池配置
+    database: 1
+    jedis:
+      pool:
+        # 最大可用连接数（默认为8，负数表示无限）
+        max-active: 16
+        # 最大空闲连接数（默认为8，负数表示无限）
+        max-idle: 16
+        # 最小空闲连接数（默认为0，该值只有为正数才有作用）
+        min-idle: 8
+        # 从连接池中获取连接最大等待时间（默认为-1，单位为毫秒，负数表示无限）
+        max-wait: -1
+
 server:
   port: 5050
 mybatis:

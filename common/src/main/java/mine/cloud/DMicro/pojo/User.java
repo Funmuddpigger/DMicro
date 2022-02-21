@@ -3,6 +3,8 @@ package mine.cloud.DMicro.pojo;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Date;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class User {
@@ -15,4 +17,8 @@ public class User {
     private String usrText;
 
     private Long usrMoney;
+
+    private Date usrCreateTime;
+
+    private String usrPassword;
 }
