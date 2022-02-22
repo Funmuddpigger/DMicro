@@ -36,6 +36,12 @@ public class UsrController {
         return iUsrServiceApi.insertUserBySelective(user);
     }
 
+
+    @RequestMapping(value = "/login", method = {RequestMethod.GET,RequestMethod.POST})
+    public ResultList loginUserBySecurity(@RequestBody User user){
+        return iUsrServiceApi.loginUserBySecurity(user);
+    }
+
     @RequestMapping(value = "/update", method = {RequestMethod.GET,RequestMethod.POST})
     public ResultList updateUserBySelective(@RequestBody User user){
         return iUsrServiceApi.updateUserBySelective(user);

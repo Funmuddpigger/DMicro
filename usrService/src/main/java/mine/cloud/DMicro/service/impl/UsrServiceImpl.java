@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -68,13 +69,13 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
         Date date = new Date();
         user.setUsrCreateTime(date);
         user.setUsrMoney(100L);
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        user.setUsrPassword(passwordEncoder.encode(user.getUsrPassword()));
         userMapper.insertSelective(user);
 
         //userId通过mapper带回来
         if(user.getUsrId()>0){
             res.setCode(HttpStatusCode.HTTP_OK);
-
-
             res.setMsg("ok");
             res.setOneData(user);
         }else{
@@ -93,6 +94,7 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
         if(Objects.isNull(authenticate)){
             throw new RuntimeException("登陆失败");
         }
+
         LoginUserDetailsImpl loginUser = (LoginUserDetailsImpl)authenticate.getPrincipal();
         Integer usrId = loginUser.getUser().getUsrId();
         String token = JwtUtil.createJWT(usrId.toString());

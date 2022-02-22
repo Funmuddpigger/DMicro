@@ -1,6 +1,7 @@
 package mine.cloud.DMicro.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -8,6 +9,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+@Configuration
 public class DefaultSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
@@ -26,13 +28,13 @@ public class DefaultSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 //关闭csrf
                 .csrf().disable()
-                //不通过session获取securityContext
+                //不通过Session获取SecurityContext
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                //登录接口放行
+                // 对于登录接口 允许匿名访问
                 .antMatchers("/user/login").anonymous()
-                //其余接口鉴权
+                // 除上面外的所有请求全部需要鉴权认证
                 .anyRequest().authenticated();
     }
 }
