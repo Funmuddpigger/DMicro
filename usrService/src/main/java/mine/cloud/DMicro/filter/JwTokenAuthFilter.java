@@ -1,6 +1,7 @@
 package mine.cloud.DMicro.filter;
 
 import io.jsonwebtoken.Claims;
+import mine.cloud.DMicro.pojo.User;
 import mine.cloud.DMicro.service.impl.LoginUserDetailsImpl;
 import mine.cloud.DMicro.utils.JwtUtil;
 import mine.cloud.DMicro.utils.StringHelperUtils;
@@ -41,7 +42,7 @@ public class JwTokenAuthFilter extends OncePerRequestFilter {
             String usrId = claims.getSubject();
             //get redis
             String redisKey = "loginUser:"+usrId;
-            LoginUserDetailsImpl userDetails = (LoginUserDetailsImpl) redisTemplate.opsForValue().get(redisKey);
+            User userDetails = (User) redisTemplate.opsForValue().get(redisKey);
             //set spring security context
             if(Objects.isNull(userDetails)){
                 throw new RuntimeException("用户未登录");

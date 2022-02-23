@@ -18,4 +18,6 @@ public interface IUsrServiceApi {
     ResultList insertUserBySelective(User user);
 
     ResultList loginUserBySecurity(User user);
+
+    ResultList logoutBySecurity();
 }

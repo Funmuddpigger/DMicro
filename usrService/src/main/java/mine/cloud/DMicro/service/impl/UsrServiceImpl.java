@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -99,11 +100,23 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
         Integer usrId = loginUser.getUser().getUsrId();
         String token = JwtUtil.createJWT(usrId.toString());
         //放入redis
-        redisTemplate.opsForValue().set("loginUser:"+usrId,loginUser);
+        redisTemplate.opsForValue().set("loginUser:"+usrId,loginUser.getUser());
 
         res.setMsg("ok");
         res.setCode(HttpStatusCode.HTTP_OK);
         res.setOneData(token);
+        return res;
+    }
+
+    @Override
+    public ResultList logoutBySecurity() {
+        ResultList res = new ResultList();
+        res.setCode(HttpStatusCode.HTTP_OK);
+        res.setMsg("ok");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User usr = (User) authentication.getPrincipal();
+        Integer usrId = usr.getUsrId();
+        redisTemplate.delete("loginUser:"+usrId);
         return res;
     }
 

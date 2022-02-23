@@ -36,6 +36,10 @@ public class UsrController {
         return iUsrServiceApi.insertUserBySelective(user);
     }
 
+    @RequestMapping(value = "/logout", method = {RequestMethod.GET,RequestMethod.POST})
+    public ResultList logoutBySecurity(){
+        return iUsrServiceApi.logoutBySecurity();
+    }
 
     @RequestMapping(value = "/login", method = {RequestMethod.GET,RequestMethod.POST})
     public ResultList loginUserBySecurity(@RequestBody User user){
