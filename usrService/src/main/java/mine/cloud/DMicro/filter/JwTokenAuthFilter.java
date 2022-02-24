@@ -45,7 +45,7 @@ public class JwTokenAuthFilter extends OncePerRequestFilter {
             User userDetails = (User) redisTemplate.opsForValue().get(redisKey);
             //set spring security context
             if(Objects.isNull(userDetails)){
-                throw new RuntimeException("用户未登录");
+                throw new RuntimeException("用户未登录/凭证已过期");
             }
 
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails,null,null);
@@ -53,6 +53,7 @@ public class JwTokenAuthFilter extends OncePerRequestFilter {
 
             //token exist exit
             filterChain.doFilter(httpServletRequest,httpServletResponse);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
@@ -99,8 +100,8 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
         LoginUserDetailsImpl loginUser = (LoginUserDetailsImpl)authenticate.getPrincipal();
         Integer usrId = loginUser.getUser().getUsrId();
         String token = JwtUtil.createJWT(usrId.toString());
-        //放入redis
-        redisTemplate.opsForValue().set("loginUser:"+usrId,loginUser.getUser());
+        //放入redis,设置过期时间为一天
+        redisTemplate.opsForValue().set("loginUser:"+usrId,loginUser.getUser(),24*60*60, TimeUnit.SECONDS);
 
         res.setMsg("ok");
         res.setCode(HttpStatusCode.HTTP_OK);
