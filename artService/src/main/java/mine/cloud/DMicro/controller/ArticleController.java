@@ -5,7 +5,6 @@ import mine.cloud.DMicro.params.RequestParams;
 import mine.cloud.DMicro.params.RequestParamsESArt;
 import mine.cloud.DMicro.pojo.Article;
 import mine.cloud.DMicro.service.IArtServiceApi;
-import mine.cloud.DMicro.utils.Result;
 import mine.cloud.DMicro.utils.ResultList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +30,12 @@ public class ArticleController {
     @RequestMapping(value = "/search",method = {RequestMethod.POST})
     public ResultList querySearchESWord(@RequestBody RequestParams params){
         return iArtServiceApi.selectByESKeyWord(params.getKey(), params.getPage(), params.getPageSize(),params.getSortBy(),params.getUpDown());
+    }
+
+    //文章搜索功能 ---其中key为token,需要校验token
+    @RequestMapping(value = "/search-usr",method = {RequestMethod.POST})
+    public ResultList queryArticleWithUsr(@RequestHeader(name = "Authorization",required = false) String token,@RequestBody RequestParams params){
+        return iArtServiceApi.selectByTokenWithUsr(token, params);
     }
 
     //文章多条件搜索--mysql

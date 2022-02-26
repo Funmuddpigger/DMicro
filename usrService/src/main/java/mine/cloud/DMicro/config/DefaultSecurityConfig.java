@@ -33,6 +33,8 @@ public class DefaultSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .cors()
+                .and()
                 //关闭csrf
                 .csrf().disable()
                 //不通过Session获取SecurityContext
@@ -40,12 +42,8 @@ public class DefaultSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 // 对于登录接口 允许匿名访问
-                .antMatchers(HttpMethod.POST,"/user/login").permitAll()
-                .antMatchers(HttpMethod.POST,"/user/register").permitAll()
-                .antMatchers(HttpMethod.POST,"/article/**").permitAll()
-                .antMatchers(HttpMethod.POST,"/article/insert").authenticated()
-                .antMatchers(HttpMethod.POST,"/article/mine").authenticated()
-                .antMatchers(HttpMethod.POST,"/article/del").authenticated()
+                .antMatchers(HttpMethod.POST,"/user/login","/user/register","/article/**").permitAll()
+                .antMatchers(HttpMethod.POST,"/article/insert","/article/mine","/article/del").authenticated()
                 // 除上面外的所有请求全部需要鉴权认证
                 .anyRequest().authenticated();
 

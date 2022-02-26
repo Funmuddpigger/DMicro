@@ -1,5 +1,6 @@
 package mine.cloud.DMicro.service.impl;
 
+import io.jsonwebtoken.Claims;
 import mine.cloud.DMicro.dao.UserMapper;
 import mine.cloud.DMicro.pojo.User;
 import mine.cloud.DMicro.service.IUsrServiceApi;
@@ -121,6 +122,22 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
         return res;
     }
 
+    @Override
+    public ResultList checkTokenAndUsr(String token) {
+        ResultList res = new ResultList();
+        try {
+            Claims claims = JwtUtil.parseJWT(token);
+            String usrId = claims.getSubject();
+            User user = userMapper.selectByPrimaryKey(Integer.valueOf(usrId));
+            res.setMsg("ok");
+            res.setCode(HttpStatusCode.HTTP_OK);
+            res.setOneData(user);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return res;
+    }
+
 
     //实现security 查询用户
     @Override
@@ -133,10 +150,9 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
         if(Objects.isNull(user)){
             throw new RuntimeException("用户或者密码错误");
         }
-        //查询权限信息
+        //查询权限信息 ---还未设置权限角色
 
         //封装数据
-
         return new LoginUserDetailsImpl(user);
     }
 }

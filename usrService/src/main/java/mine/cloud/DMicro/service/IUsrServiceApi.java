@@ -17,7 +17,12 @@ public interface IUsrServiceApi {
     //insert
     ResultList insertUserBySelective(User user);
 
+    //login
     ResultList loginUserBySecurity(User user);
 
+    //logout
     ResultList logoutBySecurity();
+
+    //check token
+    ResultList checkTokenAndUsr(String token);
 }

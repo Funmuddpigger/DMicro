@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class RequestParams {
-    //查询输入的key
+    //查询输入的key/token
     private String key;
     private Integer page;
     private Integer pageSize;

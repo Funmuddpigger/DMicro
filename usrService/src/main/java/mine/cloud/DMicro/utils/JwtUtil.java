@@ -17,9 +17,9 @@ import java.util.UUID;
 public class JwtUtil {
 
     //有效期为
-    public static final Long JWT_TTL = 60 * 60 *1000L;// 60 * 60 *1000  一个小时
+    public static final Long JWT_TTL = 24 * 60 * 60 *1000L;// 60 * 60 *1000  一个小时
     //设置秘钥明文
-    public static final String JWT_KEY = "sangeng";
+    public static final String JWT_KEY = "DMicro";
 
     public static String getUUID(){
         String token = UUID.randomUUID().toString().replaceAll("-", "");
@@ -60,7 +60,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setId(uuid)              //唯一的ID
                 .setSubject(subject)   // 主题  可以是JSON数据
-                .setIssuer("sg")     // 签发者
+                .setIssuer("DMicro")     // 签发者
                 .setIssuedAt(now)      // 签发时间
                 .signWith(signatureAlgorithm, secretKey) //使用HS256对称加密算法签名, 第二个参数为秘钥
                 .setExpiration(expDate);
@@ -79,7 +79,7 @@ public class JwtUtil {
     }
 
     public static void main(String[] args) throws Exception {
-        String token = "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIzZjQ2MjNkOTUyZWM0ZTJlODBhZGNhYTRmNDVjNzUyZiIsInN1YiI6IjIiLCJpc3MiOiJzZyIsImlhdCI6MTY0NTU0MTY1NCwiZXhwIjoxNjQ1NTQ1MjU0fQ.05v_wXIIyglOTMvWPk00FX-crR9d01zkW9kwegi9VEM";
+        String token = "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI1ODA0ZjQxMWE4NTU0NDE3ODdmYzhkNmM0YTI5OWU2ZSIsInN1YiI6IjIiLCJpc3MiOiJETWljcm8iLCJpYXQiOjE2NDU4NTI5NDgsImV4cCI6MTY0NTkzOTM0OH0.zq5shhnSjkZtHSqoSBzciwypL1qhIvoENCehPW01CyY";
         Claims claims = parseJWT(token);
         System.out.println(claims);
     }

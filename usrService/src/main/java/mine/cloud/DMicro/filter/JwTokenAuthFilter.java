@@ -29,8 +29,10 @@ public class JwTokenAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
+
+
         //get token
-        String token = httpServletRequest.getHeader("token");
+        String token = httpServletRequest.getHeader("Token");
         if(!StringHelperUtils.isNotEmpty(token)){
             //无token,放行
             filterChain.doFilter(httpServletRequest,httpServletResponse);

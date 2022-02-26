@@ -7,6 +7,7 @@ import mine.cloud.DMicro.doc.HotwordDoc;
 import mine.cloud.DMicro.feignClients.ComClient;
 import mine.cloud.DMicro.feignClients.UsrClient;
 import mine.cloud.DMicro.mqQueueType.MqStaticType;
+import mine.cloud.DMicro.params.RequestParams;
 import mine.cloud.DMicro.params.RequestParamsESArt;
 import mine.cloud.DMicro.pojo.Article;
 import mine.cloud.DMicro.pojo.Comment;
@@ -232,6 +233,48 @@ public class ArtServiceImpl implements IArtServiceApi  {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * 根据token得到usr信息获取对应id文章 es
+     * @param token
+     * @param params
+     * @return
+     */
+    @Override
+    public ResultList selectByTokenWithUsr(String token, RequestParams params) {
+        ResultList res = new ResultList();
+
+        ResultList authRes = usrClient.getAuthAndCheck(params.getKey());
+        try {
+            if(authRes.getCode()!=HttpStatusCode.HTTP_OK){
+                throw new RuntimeException("无效token,请校验");
+            }
+            //token有效
+
+            ObjectMapper mapper = new ObjectMapper();
+            String str = mapper.writeValueAsString(authRes.getOneData());
+            User usr = mapper.readValue(str, User.class);
+            //request
+            SearchRequest request = new SearchRequest("article");
+            //DSL
+            BoolQueryBuilder queryBuilder = new BoolQueryBuilder();
+            queryBuilder.must(QueryBuilders.termQuery("usrId",usr.getUsrId()));
+            //组装好的查询条件放入
+            request.source().query(queryBuilder);
+            //分页 from 为当前页面在总数据中的第几条数据
+            request.source().from((params.getPage() - 1) * params.getPageSize()).size(params.getPageSize());
+            //发送请求--全文检索查询
+            SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+            List<ArticleDoc> articleDocs = handleResponse(response);
+            res.setMsg("ok");
+            res.setCode(HttpStatusCode.HTTP_OK);
+            res.setData(articleDocs);
+            res.setOneData(usr);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return res;
     }
 
     /**
