@@ -46,7 +46,7 @@ spring:
     # redis连接超时时间（单位为毫秒）
     timeout: 2000
     # redis连接池配置
-    database: 1
+    database: 3
     jedis:
       pool:
         # 最大可用连接数（默认为8，负数表示无限）
@@ -57,6 +57,7 @@ spring:
         min-idle: 8
         # 从连接池中获取连接最大等待时间（默认为-1，单位为毫秒，负数表示无限）
         max-wait: -1
+
 
 server:
   port: 7070
@@ -72,3 +73,13 @@ pagehelper:
   reasonable: true
   support-methods-arguments: true
   params: count=countsql
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 300000
+        readTimeout: 300000
+# 设置ribbon超时时间
+ribbon:
+  ReadTimeout: 20000
+  ConnectTimeout: 20000

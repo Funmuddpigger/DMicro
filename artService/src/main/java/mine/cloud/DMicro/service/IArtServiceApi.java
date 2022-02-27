@@ -2,6 +2,7 @@ package mine.cloud.DMicro.service;
 
 import mine.cloud.DMicro.params.RequestParams;
 import mine.cloud.DMicro.params.RequestParamsESArt;
+import mine.cloud.DMicro.params.RequestParamsRedisArtUsr;
 import mine.cloud.DMicro.pojo.Article;
 import mine.cloud.DMicro.utils.Result;
 import mine.cloud.DMicro.utils.ResultList;
@@ -47,4 +48,8 @@ public interface IArtServiceApi {
     ResultList getESArticleByTitleOrType(RequestParamsESArt params);
 
     ResultList selectByTokenWithUsr(String token, RequestParams params);
+
+    ResultList tapArticleLike(RequestParamsRedisArtUsr params);
+
+    ResultList tapArticleRead(RequestParamsRedisArtUsr params);
 }

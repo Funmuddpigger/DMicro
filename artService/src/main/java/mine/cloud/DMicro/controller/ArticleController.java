@@ -3,6 +3,7 @@ package mine.cloud.DMicro.controller;
 import lombok.extern.slf4j.Slf4j;
 import mine.cloud.DMicro.params.RequestParams;
 import mine.cloud.DMicro.params.RequestParamsESArt;
+import mine.cloud.DMicro.params.RequestParamsRedisArtUsr;
 import mine.cloud.DMicro.pojo.Article;
 import mine.cloud.DMicro.service.IArtServiceApi;
 import mine.cloud.DMicro.utils.ResultList;
@@ -77,6 +78,18 @@ public class ArticleController {
     @RequestMapping(value = "/update",method = {RequestMethod.POST})
     public ResultList updateArticleById(@RequestBody Article article){
         return iArtServiceApi.updateArticle(article);
+    }
+
+    //文章点赞功能  --redis
+    @RequestMapping(value = "/like",method = {RequestMethod.POST})
+    public ResultList tapArticleLike(@RequestBody RequestParamsRedisArtUsr params){
+        return iArtServiceApi.tapArticleLike(params);
+    }
+
+    //文章点赞功能  --redis
+    @RequestMapping(value = "/read",method = {RequestMethod.POST})
+    public ResultList tapArticleRead(@RequestBody RequestParamsRedisArtUsr params){
+        return iArtServiceApi.tapArticleRead(params);
     }
 
     //文章删除功能 

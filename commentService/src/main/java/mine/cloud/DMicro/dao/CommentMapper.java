@@ -18,4 +18,6 @@ public interface CommentMapper {
     int updateByPrimaryKey(Comment record);
 
     List<Comment> selectBySelectives(Comment record);
+
+    int deleteBySelectives(Comment record);
 }

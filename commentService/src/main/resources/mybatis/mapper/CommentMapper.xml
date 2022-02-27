@@ -49,6 +49,30 @@
     delete from com_table
     where com_id = #{comId,jdbcType=INTEGER}
   </delete>
+
+  <delete id="deleteBySelectives" parameterType="java.lang.Integer">
+    delete from com_table
+    where 1=1
+    <if test="comDate != null">
+      AND  com_date = #{comDate,jdbcType=TIMESTAMP}
+    </if>
+    <if test="usrId != null">
+      AND  usr_id = #{usrId,jdbcType=INTEGER}
+    </if>
+    <if test="comText != null">
+      AND  com_text = #{comText,jdbcType=VARCHAR}
+    </if>
+    <if test="artId != null">
+      AND  art_id = #{artId,jdbcType=INTEGER}
+    </if>
+    <if test="comParId != null">
+      AND  com_par_id = #{comParId,jdbcType=INTEGER}
+    </if>
+    <if test="comLike != null">
+      AND  com_like = #{comLike,jdbcType=BIGINT}
+    </if>
+  </delete>
+
   <insert id="insert" parameterType="mine.cloud.DMicro.pojo.Comment">
     insert into com_table (com_id, com_date, usr_id, 
       com_text, art_id, com_par_id, 

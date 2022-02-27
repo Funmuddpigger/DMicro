@@ -21,4 +21,6 @@ public class User {
     private Date usrCreateTime;
 
     private String usrPassword;
+
+    private Integer usrFans;
 }

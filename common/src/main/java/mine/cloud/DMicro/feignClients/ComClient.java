@@ -13,11 +13,19 @@ import java.util.List;
 public interface ComClient {
 
     /**
-     * 供文章调用评论接口
+     * 供文章调用评论接口 ----删除文章
      * @param record 只传artId
      * @return
      */
     @PostMapping("/comment/select")
     ResultList selectCommentBySelectives(@RequestBody Comment record);
+
+    /**
+     * 供文章调用评论接口 ---删除评论接口
+     * @param record 只传artId
+     * @return
+     */
+    @PostMapping("/comment/del")
+    ResultList delCommentBySelectives(@RequestBody Comment record);
 
 }

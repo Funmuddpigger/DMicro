@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
@@ -132,6 +133,29 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
             res.setMsg("ok");
             res.setCode(HttpStatusCode.HTTP_OK);
             res.setOneData(user);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return res;
+    }
+
+    /**
+     * 每个用户维护一个hash对应粉丝,hash.size就是粉丝数
+     * @param followUsrId
+     * @param request
+     * @return
+     */
+    @Override
+    public ResultList followUser(Integer followUsrId, HttpServletRequest request) {
+        ResultList res = new ResultList();
+        try {
+            String token = request.getHeader("Token");
+            Claims claims = JwtUtil.parseJWT(token);
+            String usrId = claims.getSubject();
+            User user = userMapper.selectByPrimaryKey(Integer.valueOf(usrId));
+            redisTemplate.opsForHash().put("follow:usr:"+followUsrId,usrId,user);
+            res.setMsg("ok");
+            res.setCode(HttpStatusCode.HTTP_OK);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -7,6 +7,8 @@ import mine.cloud.DMicro.utils.ResultList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Slf4j
 @CrossOrigin
 @RestController
@@ -15,6 +17,9 @@ public class UsrController {
 
     @Autowired
     private IUsrServiceApi iUsrServiceApi;
+
+    @Autowired
+    private HttpServletRequest request;
 
     //验证实验权限页面
     @RequestMapping("/hello")
@@ -62,5 +67,11 @@ public class UsrController {
     @RequestMapping(value = "/update", method = {RequestMethod.GET,RequestMethod.POST})
     public ResultList updateUserBySelective(@RequestBody User user){
         return iUsrServiceApi.updateUserBySelective(user);
+    }
+
+    //更新用户信息 ---mysql ,mq ,redis 异步构建
+    @RequestMapping(value = "/follow", method = {RequestMethod.GET,RequestMethod.POST})
+    public ResultList followUser(@RequestBody Integer user){
+        return iUsrServiceApi.followUser(user,request);
     }
 }

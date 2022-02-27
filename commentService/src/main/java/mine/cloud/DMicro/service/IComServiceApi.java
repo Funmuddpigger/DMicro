@@ -16,4 +16,6 @@ public interface IComServiceApi {
 
     //select comment
     ResultList selectCommentBySelectives(Comment params);
+
+    ResultList delCommentBySelectives(Comment record);
 }

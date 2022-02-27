@@ -9,9 +9,10 @@
     <result column="usr_money" jdbcType="BIGINT" property="usrMoney" />
     <result column="usr_create_time" jdbcType="TIMESTAMP" property="usrCreateTime" />
     <result column="usr_password" jdbcType="VARCHAR" property="usrPassword" />
+    <result column="usr_fans" jdbcType="INTEGER" property="usrFans" />
   </resultMap>
   <sql id="Base_Column_List">
-    usr_id, usr_nickname, usr_phone, usr_text, usr_money, usr_create_time, usr_password
+    usr_id, usr_nickname, usr_phone, usr_text, usr_money, usr_create_time, usr_password,usr_fans
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -41,6 +42,9 @@
     </if>
     <if test="usrPassword != null">
     AND  usr_password = #{usrPassword,jdbcType=VARCHAR}
+    </if>
+    <if test="usrFans != null">
+      AND  usr_fans = #{usrFans,jdbcType=INTEGER}
     </if>
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
@@ -77,6 +81,9 @@
       <if test="usrPassword != null">
         usr_password,
       </if>
+      <if test="usrFans != null">
+        usr_fans,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="usrId != null">
@@ -99,6 +106,9 @@
       </if>
       <if test="usrPassword != null">
         #{usrPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="usrFans != null">
+        #{usrFans,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>

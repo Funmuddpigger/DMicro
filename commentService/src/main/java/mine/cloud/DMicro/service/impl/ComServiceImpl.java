@@ -79,4 +79,12 @@ public class ComServiceImpl implements IComServiceApi {
         res.setData(comments);
         return res;
     }
+
+    @Override
+    public ResultList delCommentBySelectives(Comment record) {
+        ResultList res = new ResultList();
+        res.setCode(HttpStatusCode.HTTP_OK);
+        commentMapper.deleteBySelectives(record);
+        return null;
+    }
 }

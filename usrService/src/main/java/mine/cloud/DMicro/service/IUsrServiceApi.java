@@ -3,6 +3,8 @@ package mine.cloud.DMicro.service;
 import mine.cloud.DMicro.pojo.User;
 import mine.cloud.DMicro.utils.ResultList;
 
+import javax.servlet.http.HttpServletRequest;
+
 public interface IUsrServiceApi {
 
     //select by pk
@@ -25,4 +27,6 @@ public interface IUsrServiceApi {
 
     //check token
     ResultList checkTokenAndUsr(String token);
+
+    ResultList followUser(Integer user, HttpServletRequest request);
 }

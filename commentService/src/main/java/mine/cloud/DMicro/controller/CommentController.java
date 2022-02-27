@@ -31,6 +31,11 @@ public class CommentController {
         return iComServiceApi.delCommentById(comId);
     }
 
+    @RequestMapping(value = "/del",method = {RequestMethod.POST,RequestMethod.GET})
+        public ResultList delCommentById(@RequestBody Comment record){
+        return iComServiceApi.delCommentBySelectives(record);
+    }
+
     @RequestMapping(value = "/insert",method = {RequestMethod.POST,RequestMethod.GET})
     public ResultList addCommentBySelectives(@RequestBody Comment comment){
         return iComServiceApi.addCommentBySelectives(comment);

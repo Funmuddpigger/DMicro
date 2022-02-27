@@ -58,3 +58,13 @@ mybatis:
     map-underscore-to-camel-case: true
   #mapper.xml位置
   mapper-locations: classpath*:/mybatis/mapper/**Mapper.xml
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 300000
+        readTimeout: 300000
+# 设置ribbon超时时间
+ribbon:
+  ReadTimeout: 20000
+  ConnectTimeout: 20000

@@ -1,5 +1,7 @@
 package mine.cloud.DMicro.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import mine.cloud.DMicro.dao.ArticleMapper;
 import mine.cloud.DMicro.doc.ArticleDoc;
@@ -9,6 +11,7 @@ import mine.cloud.DMicro.feignClients.UsrClient;
 import mine.cloud.DMicro.mqQueueType.MqStaticType;
 import mine.cloud.DMicro.params.RequestParams;
 import mine.cloud.DMicro.params.RequestParamsESArt;
+import mine.cloud.DMicro.params.RequestParamsRedisArtUsr;
 import mine.cloud.DMicro.pojo.Article;
 import mine.cloud.DMicro.pojo.Comment;
 import mine.cloud.DMicro.pojo.User;
@@ -39,12 +42,14 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -103,7 +108,7 @@ public class ArtServiceImpl implements IArtServiceApi  {
     @Override
     public ResultList selectByESKeyWord(String word, Integer page, Integer pageSize, String sortBy, String upDown) {
         try {
-            ResultList res = new ResultList();
+//            ResultList res = new ResultList();
             //Request
             SearchRequest request = new SearchRequest("article");
             //DSL
@@ -136,8 +141,7 @@ public class ArtServiceImpl implements IArtServiceApi  {
             //发送请求--全文检索查询
             SearchResponse response = client.search(request, RequestOptions.DEFAULT);
             //解析拿到res,返回
-            List<ArticleDoc> articleDocs = handleResponse(response);
-            res.setData(articleDocs);
+            ResultList res = handleResponse(response);
             res.setCode(HttpStatusCode.HTTP_OK);
             res.setMsg("ok");
             return res;
@@ -190,7 +194,10 @@ public class ArtServiceImpl implements IArtServiceApi  {
     @Override
     public ResultList getESArticleByTitleOrType(RequestParamsESArt params) {
         try {
-            ResultList res = new ResultList();
+//            ResultList res = new ResultList();
+            //check token
+            User usr = handleTokenAuthRes(params.getToken());
+
             String title = params.getTitle();
             String type = params.getType();
             //request
@@ -210,10 +217,9 @@ public class ArtServiceImpl implements IArtServiceApi  {
             request.source().query(boolQueryBuilder);
             //res
             SearchResponse response = client.search(request, RequestOptions.DEFAULT);
-            List<ArticleDoc> articleDocs = handleResponse(response);
+            ResultList res = handleResponse(response);
             //if size >= 1 get first
-            ArticleDoc articleDoc = articleDocs.get(0);
-            res.setData(articleDocs);
+            ArticleDoc articleDoc = (ArticleDoc) res.getData().get(0);
             //if have title comment
             if(StringHelperUtils.isNotEmpty(title)){
                 Integer artId = articleDoc.getArtId();
@@ -226,6 +232,18 @@ public class ArtServiceImpl implements IArtServiceApi  {
                 }
             }
 
+            HashMap<String, Object> map = new HashMap<>();
+            //take usr and check like read follow
+            if(!ObjectUtils.isEmpty(usr)){
+                Boolean exist = redisTemplate.opsForSet().isMember("likeUser:article:" + articleDoc.getArtId(), usr.getUsrId());
+                map.put("isLike",exist);
+            }
+            Object read = redisTemplate.opsForHash().get("read::article", articleDoc.getArtId());
+            Object like = redisTemplate.opsForSet().size("likeUser:article:" + articleDoc.getArtId());
+            map.put("like",like);
+            map.put("read",read);
+
+            res.setMapData(map);
             res.setOneData(articleDoc);
             res.setCode(HttpStatusCode.HTTP_OK);
             res.setMsg("ok");
@@ -243,18 +261,9 @@ public class ArtServiceImpl implements IArtServiceApi  {
      */
     @Override
     public ResultList selectByTokenWithUsr(String token, RequestParams params) {
-        ResultList res = new ResultList();
-
-        ResultList authRes = usrClient.getAuthAndCheck(params.getKey());
+        //调用usr
         try {
-            if(authRes.getCode()!=HttpStatusCode.HTTP_OK){
-                throw new RuntimeException("无效token,请校验");
-            }
-            //token有效
-
-            ObjectMapper mapper = new ObjectMapper();
-            String str = mapper.writeValueAsString(authRes.getOneData());
-            User usr = mapper.readValue(str, User.class);
+            User usr = handleTokenAuthRes(params.getKey());
             //request
             SearchRequest request = new SearchRequest("article");
             //DSL
@@ -266,15 +275,14 @@ public class ArtServiceImpl implements IArtServiceApi  {
             request.source().from((params.getPage() - 1) * params.getPageSize()).size(params.getPageSize());
             //发送请求--全文检索查询
             SearchResponse response = client.search(request, RequestOptions.DEFAULT);
-            List<ArticleDoc> articleDocs = handleResponse(response);
+            ResultList res = handleResponse(response);
             res.setMsg("ok");
             res.setCode(HttpStatusCode.HTTP_OK);
-            res.setData(articleDocs);
             res.setOneData(usr);
+            return res;
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return res;
     }
 
     /**
@@ -354,6 +362,50 @@ public class ArtServiceImpl implements IArtServiceApi  {
     }
 
     /**
+     * 文章点赞功能 --redis 一篇文章维护一个hash likeUser::article:artId
+     * @param params
+     * @return
+     */
+    @Override
+    public ResultList tapArticleLike(RequestParamsRedisArtUsr params) {
+        ResultList res = new ResultList();
+        //get Usr
+        User usr = handleTokenAuthRes(params.getToken());
+        //if/not already like
+        Boolean exist = redisTemplate.opsForSet().isMember("likeUser:article:" + params.getArtId(), usr.getUsrId());
+        if(!exist){
+            redisTemplate.opsForSet().add("likeUser:article:"+ params.getArtId(), usr.getUsrId());
+        }else{
+            //exist del
+            redisTemplate.opsForSet().remove("likeUser:article:"+ params.getArtId(), usr.getUsrId());
+        }
+        res.setCode(HttpStatusCode.HTTP_OK);
+        res.setOneData(!exist);
+        res.setMsg("ok");
+        return res;
+    }
+
+    /**
+     * 文章阅读功能 --redis read::article --- key:article value:tap num
+     * @param params
+     * @return
+     */
+    @Override
+    public ResultList tapArticleRead(RequestParamsRedisArtUsr params) {
+        ResultList res = new ResultList();
+        //if/not already read
+        Boolean absent = redisTemplate.opsForHash().putIfAbsent("read::article", params.getArtId(), 1);
+        if(!absent){
+             redisTemplate.opsForHash().increment("read::article", params.getArtId(), 1);
+        }
+        Object read = redisTemplate.opsForHash().get("read::article", params.getArtId());
+        res.setCode(HttpStatusCode.HTTP_OK);
+        res.setOneData(read);
+        res.setMsg("ok");
+        return res;
+    }
+
+    /**
      * 文章删除
      * @param id
      * @return
@@ -367,6 +419,10 @@ public class ArtServiceImpl implements IArtServiceApi  {
         //发送消息
         rabbitTemplate.convertAndSend(MqStaticType.ARTICLE_EXCHANGE,MqStaticType.ARTICLE_DEL_KEY,id);
         //后续要把相关的评论都一起删除
+
+        Comment comment = new Comment();
+        comment.setArtId(id);
+        comClient.delCommentBySelectives(comment);
 
         return res;
     }
@@ -438,7 +494,7 @@ public class ArtServiceImpl implements IArtServiceApi  {
     }
 
 
-    private List<ArticleDoc> handleResponse(SearchResponse response) throws com.fasterxml.jackson.core.JsonProcessingException {
+    private ResultList handleResponse(SearchResponse response) throws com.fasterxml.jackson.core.JsonProcessingException {
         ResultList res = new ResultList();
         SearchHits searchHits = response.getHits();
         //得到文档总条数
@@ -454,6 +510,26 @@ public class ArtServiceImpl implements IArtServiceApi  {
             ArticleDoc articleDoc = mapper.readValue(json, ArticleDoc.class);
             data.add(articleDoc);
         }
-        return data;
+        res.setData(data);
+        return res;
+    }
+
+    private User handleTokenAuthRes(String token){
+        if(!StringHelperUtils.isNotEmpty(token)){
+            return new User();
+        }
+        ResultList authRes = usrClient.getAuthAndCheck(token);
+        try{
+            if(authRes.getCode()!=HttpStatusCode.HTTP_OK){
+                throw new RuntimeException("无效token,请校验");
+            }
+            //token有效
+            ObjectMapper mapper = new ObjectMapper();
+            String str = mapper.writeValueAsString(authRes.getOneData());
+            User usr = mapper.readValue(str, User.class);
+            return usr;
+        }catch(Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
