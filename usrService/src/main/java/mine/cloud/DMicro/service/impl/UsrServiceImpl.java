@@ -151,9 +151,15 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
         try {
             String token = request.getHeader("Token");
             Claims claims = JwtUtil.parseJWT(token);
-            String usrId = claims.getSubject();
-            User user = userMapper.selectByPrimaryKey(Integer.valueOf(usrId));
-            redisTemplate.opsForHash().put("follow:usr:"+followUsrId,usrId,user);
+            Integer usrId = Integer.valueOf(claims.getSubject());
+            User user = userMapper.selectByPrimaryKey(usrId);
+            //if not exist put / exist del
+            Boolean already = redisTemplate.opsForHash().putIfAbsent("follow:usr:" + followUsrId, usrId, user);
+            if(!already){
+                redisTemplate.opsForHash().delete("follow:usr:"+followUsrId,usrId,user);
+            }
+            //already 已关注 /!already 未关注
+            res.setOneData(already);
             res.setMsg("ok");
             res.setCode(HttpStatusCode.HTTP_OK);
         } catch (Exception e) {

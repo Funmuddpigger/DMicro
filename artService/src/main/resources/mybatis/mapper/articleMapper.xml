@@ -156,4 +156,24 @@
     </set>
     where art_id = #{artId,jdbcType=INTEGER}
   </update>
+
+  <update id="updateByPrimaryKeyForeachRead" parameterType="java.util.Map">
+    <foreach collection="recordMap" item="value" index="key" separator=";">
+      update art_table set
+      <if test="value!=null">
+        art_read = #{value}
+      </if>
+      where art_id = #{key}
+    </foreach>
+  </update>
+
+  <update id="updateByPrimaryKeyForeachLike" parameterType="java.util.Map">
+    <foreach collection="recordMap" item="value" index="key" separator=";">
+      update art_table set
+      <if test="value!=null">
+        art_like = #{value}
+      </if>
+      where art_id = #{key}
+    </foreach>
+  </update>
 </mapper>

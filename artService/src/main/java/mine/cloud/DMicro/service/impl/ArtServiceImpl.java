@@ -238,12 +238,11 @@ public class ArtServiceImpl implements IArtServiceApi  {
                 Boolean exist = redisTemplate.opsForSet().isMember("likeUser:article:" + articleDoc.getArtId(), usr.getUsrId());
                 map.put("isLike",exist);
             }
-            Object read = redisTemplate.opsForHash().get("read::article", articleDoc.getArtId());
-            Object like = redisTemplate.opsForSet().size("likeUser:article:" + articleDoc.getArtId());
-            map.put("like",like);
-            map.put("read",read);
+            Integer read = (Integer)redisTemplate.opsForHash().get("read::article",articleDoc.getArtId());
+            Long like = redisTemplate.opsForSet().size("likeUser:article:" + articleDoc.getArtId());
 
-            res.setMapData(map);
+            articleDoc.setArtLike(like);
+            articleDoc.setArtRead(read.longValue());
             res.setOneData(articleDoc);
             res.setCode(HttpStatusCode.HTTP_OK);
             res.setMsg("ok");
@@ -372,6 +371,7 @@ public class ArtServiceImpl implements IArtServiceApi  {
         //get Usr
         User usr = handleTokenAuthRes(params.getToken());
         //if/not already like
+        redisTemplate.opsForSet().add("change::article",usr.getUsrId());
         Boolean exist = redisTemplate.opsForSet().isMember("likeUser:article:" + params.getArtId(), usr.getUsrId());
         if(!exist){
             redisTemplate.opsForSet().add("likeUser:article:"+ params.getArtId(), usr.getUsrId());
@@ -394,11 +394,12 @@ public class ArtServiceImpl implements IArtServiceApi  {
     public ResultList tapArticleRead(RequestParamsRedisArtUsr params) {
         ResultList res = new ResultList();
         //if/not already read
-        Boolean absent = redisTemplate.opsForHash().putIfAbsent("read::article", params.getArtId(), 1);
+        Boolean absent = redisTemplate.opsForHash().putIfAbsent("read::article", params.getArtId(), 1L);
         if(!absent){
-             redisTemplate.opsForHash().increment("read::article", params.getArtId(), 1);
+             redisTemplate.opsForHash().increment("read::article", params.getArtId(), 1L);
         }
-        Object read = redisTemplate.opsForHash().get("read::article", params.getArtId());
+        Integer readInt = (Integer)redisTemplate.opsForHash().get("read::article", params.getArtId());
+        Long read = readInt.longValue();
         res.setCode(HttpStatusCode.HTTP_OK);
         res.setOneData(read);
         res.setMsg("ok");
