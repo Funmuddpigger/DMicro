@@ -22,5 +22,5 @@ public class User {
 
     private String usrPassword;
 
-    private Integer usrFans;
+    private Long usrFans;
 }

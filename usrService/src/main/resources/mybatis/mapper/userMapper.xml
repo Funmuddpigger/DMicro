@@ -9,7 +9,7 @@
     <result column="usr_money" jdbcType="BIGINT" property="usrMoney" />
     <result column="usr_create_time" jdbcType="TIMESTAMP" property="usrCreateTime" />
     <result column="usr_password" jdbcType="VARCHAR" property="usrPassword" />
-    <result column="usr_fans" jdbcType="INTEGER" property="usrFans" />
+    <result column="usr_fans" jdbcType="BIGINT" property="usrFans" />
   </resultMap>
   <sql id="Base_Column_List">
     usr_id, usr_nickname, usr_phone, usr_text, usr_money, usr_create_time, usr_password,usr_fans
@@ -44,7 +44,7 @@
     AND  usr_password = #{usrPassword,jdbcType=VARCHAR}
     </if>
     <if test="usrFans != null">
-      AND  usr_fans = #{usrFans,jdbcType=INTEGER}
+      AND  usr_fans = #{usrFans,jdbcType=BIGINT}
     </if>
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
@@ -108,7 +108,7 @@
         #{usrPassword,jdbcType=VARCHAR},
       </if>
       <if test="usrFans != null">
-        #{usrFans,jdbcType=INTEGER},
+        #{usrFans,jdbcType=BIGINT},
       </if>
     </trim>
   </insert>
@@ -133,7 +133,28 @@
       <if test="usrPassword != null">
         usr_password = #{usrPassword,jdbcType=VARCHAR},
       </if>
+      <if test="usrFans != null">
+        usr_fans = #{usrFans,jdbcType=VARCHAR},
+      </if>
     </set>
     where usr_id = #{usrId,jdbcType=INTEGER}
   </update>
+
+  <update id="updateByPrimaryKeyFansForeach" parameterType="java.util.Map">
+    <foreach collection="recordMap" item="value" index="key" separator=";">
+      update usr_table set
+      <if test="value!=null">
+        usr_fans = #{value}
+      </if>
+      where usr_id = #{key}
+    </foreach>
+  </update>
+
+  <!-- 采用in,当id不是主键或者索引的时候,in的性能随着数据变多,会比or好很多 -->
+  <select id="selectBatchByIds" resultMap="BaseResultMap" parameterType="java.util.List">
+    select * from usr_table
+    <foreach collection="ids" item="item" open="where usr_id in(" close=")" separator=",">
+      #{item}
+    </foreach>
+  </select>
 </mapper>

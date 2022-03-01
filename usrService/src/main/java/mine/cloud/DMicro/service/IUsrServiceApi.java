@@ -29,4 +29,8 @@ public interface IUsrServiceApi {
     ResultList checkTokenAndUsr(String token);
 
     ResultList followUser(Integer user, HttpServletRequest request);
+
+    ResultList getFollowUser(HttpServletRequest request);
+
+    ResultList getFanAndNum(HttpServletRequest request);
 }

@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -149,23 +150,65 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
     public ResultList followUser(Integer followUsrId, HttpServletRequest request) {
         ResultList res = new ResultList();
         try {
-            String token = request.getHeader("Token");
-            Claims claims = JwtUtil.parseJWT(token);
-            Integer usrId = Integer.valueOf(claims.getSubject());
+            Integer usrId = handleRequestGetToken(request);
             User user = userMapper.selectByPrimaryKey(usrId);
+
+            redisTemplate.opsForSet().add("change::user:" , followUsrId);
+            Boolean exist = redisTemplate.opsForSet().isMember("follow:usr:" + usrId, followUsrId);
             //if not exist put / exist del
-            Boolean already = redisTemplate.opsForHash().putIfAbsent("follow:usr:" + followUsrId, usrId, user);
-            if(!already){
-                redisTemplate.opsForHash().delete("follow:usr:"+followUsrId,usrId,user);
+            if(!exist){
+                //follow who
+                redisTemplate.opsForSet().add("follow:usr:" + usrId, followUsrId);
+                //who is his fans
+                redisTemplate.opsForSet().add("fans:usr:" + followUsrId, usrId);
+            }else{
+                //unfollow who
+                redisTemplate.opsForSet().remove("follow:usr:" + usrId, followUsrId);
+                //who is not his fans
+                redisTemplate.opsForSet().remove("fans:usr:" + followUsrId, usrId);
             }
-            //already 已关注 /!already 未关注
-            res.setOneData(already);
+            //exist follow or not
+            res.setOneData(exist);
             res.setMsg("ok");
             res.setCode(HttpStatusCode.HTTP_OK);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return res;
+    }
+
+    @Override
+    public ResultList getFollowUser(HttpServletRequest request) {
+        try {
+            ResultList res = new ResultList();
+            Integer usrId = handleRequestGetToken(request);
+            Long size = redisTemplate.opsForSet().size("follow:usr:" + usrId);
+            List<Integer> followIds = redisTemplate.opsForSet().pop("follow:usr:" + usrId, size);
+            List<User> users = userMapper.selectBatchByIds(followIds);
+            res.setData(users);
+            res.setCode(HttpStatusCode.HTTP_OK);
+            res.setMsg("ok");
+            return res;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public ResultList getFanAndNum(HttpServletRequest request) {
+        try {
+            ResultList res = new ResultList();
+            Integer usrId = handleRequestGetToken(request);
+            Long size = redisTemplate.opsForSet().size("fans:usr:" + usrId);
+            List<Integer> fanIds = redisTemplate.opsForSet().pop("fans:usr:" + usrId, size);
+            List<User> users = userMapper.selectBatchByIds(fanIds);
+            res.setData(users);
+            res.setCode(HttpStatusCode.HTTP_OK);
+            res.setMsg("ok");
+            return res;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -185,4 +228,17 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
         //封装数据
         return new LoginUserDetailsImpl(user);
     }
+
+    /**
+     * 统一处理token
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    private Integer handleRequestGetToken(HttpServletRequest request) throws Exception {
+        String token = request.getHeader("Token");
+        Claims claims = JwtUtil.parseJWT(token);
+        return Integer.valueOf(claims.getSubject());
+    }
+
 }

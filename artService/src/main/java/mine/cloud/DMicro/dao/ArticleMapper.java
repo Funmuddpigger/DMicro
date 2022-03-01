@@ -23,4 +23,6 @@ public interface ArticleMapper {
     int updateByPrimaryKeyForeachRead(@Param("recordMap") Map<Integer,Long> recordMap);
 
     int updateByPrimaryKeyForeachLike(@Param("recordMap") Map<Integer,Long> recordMap);
+
+
 }

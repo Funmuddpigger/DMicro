@@ -2,8 +2,10 @@ package mine.cloud.DMicro.dao;
 
 
 import mine.cloud.DMicro.pojo.User;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserMapper {
     int deleteByPrimaryKey(Integer usrId);
@@ -17,4 +19,8 @@ public interface UserMapper {
     int updateByPrimaryKeySelective(User record);
 
     User selectOneBySelective(User record);
+
+    int updateByPrimaryKeyFansForeach(@Param("recordMap") Map<Integer, Long> recordMap);
+
+    List<User> selectBatchByIds(@Param("ids") List<Integer> ids);
 }
