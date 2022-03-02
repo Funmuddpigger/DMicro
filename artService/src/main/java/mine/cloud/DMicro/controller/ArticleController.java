@@ -10,6 +10,7 @@ import mine.cloud.DMicro.utils.ResultList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 
@@ -18,6 +19,8 @@ import java.util.List;
 @CrossOrigin
 @RequestMapping("/article")
 public class ArticleController {
+
+
 
     @Autowired
     private IArtServiceApi iArtServiceApi;
@@ -33,10 +36,10 @@ public class ArticleController {
         return iArtServiceApi.selectByESKeyWord(params.getKey(), params.getPage(), params.getPageSize(),params.getSortBy(),params.getUpDown());
     }
 
-    //文章搜索功能 ---其中key为token,需要校验token
+    //文章搜索功能 ---其中key为token,有token,需要校验token,无token需要当作访问请求校验
     @RequestMapping(value = "/search-usr",method = {RequestMethod.POST})
-    public ResultList queryArticleWithUsr(@RequestHeader(name = "Authorization",required = false) String token,@RequestBody RequestParams params){
-        return iArtServiceApi.selectByTokenWithUsr(token, params);
+    public ResultList queryArticleWithUsr(HttpServletRequest request,@RequestBody RequestParams params){
+        return iArtServiceApi.selectByTokenWithUsr(request, params);
     }
 
     //文章多条件搜索--mysql

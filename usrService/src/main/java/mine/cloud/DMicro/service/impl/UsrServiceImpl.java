@@ -149,9 +149,15 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
     @Override
     public ResultList followUser(Integer followUsrId, HttpServletRequest request) {
         ResultList res = new ResultList();
+        res.setMsg("ok");
+        res.setCode(HttpStatusCode.HTTP_OK);
         try {
             Integer usrId = handleRequestGetToken(request);
             User user = userMapper.selectByPrimaryKey(usrId);
+
+            if(usrId == followUsrId){
+                return res;
+            }
 
             redisTemplate.opsForSet().add("change::user:" , followUsrId);
             Boolean exist = redisTemplate.opsForSet().isMember("follow:usr:" + usrId, followUsrId);
@@ -169,8 +175,6 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
             }
             //exist follow or not
             res.setOneData(exist);
-            res.setMsg("ok");
-            res.setCode(HttpStatusCode.HTTP_OK);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

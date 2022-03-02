@@ -7,6 +7,7 @@ import mine.cloud.DMicro.pojo.Article;
 import mine.cloud.DMicro.utils.Result;
 import mine.cloud.DMicro.utils.ResultList;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -47,7 +48,7 @@ public interface IArtServiceApi {
 
     ResultList getESArticleByTitleOrType(RequestParamsESArt params);
 
-    ResultList selectByTokenWithUsr(String token, RequestParams params);
+    ResultList selectByTokenWithUsr(HttpServletRequest request, RequestParams params);
 
     ResultList tapArticleLike(RequestParamsRedisArtUsr params);
 

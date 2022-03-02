@@ -45,6 +45,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -241,8 +242,15 @@ public class ArtServiceImpl implements IArtServiceApi  {
             Integer read = (Integer)redisTemplate.opsForHash().get("read::article",articleDoc.getArtId());
             Long like = redisTemplate.opsForSet().size("likeUser:article:" + articleDoc.getArtId());
 
-            articleDoc.setArtLike(like);
-            articleDoc.setArtRead(read.longValue());
+            //if null es not redis
+            if(like != null){
+                articleDoc.setArtLike(like);
+            }
+            if(read != null){
+                articleDoc.setArtRead(read.longValue());
+            }
+            map.put("userInfo",usr);
+            res.setMapData(map);
             res.setOneData(articleDoc);
             res.setCode(HttpStatusCode.HTTP_OK);
             res.setMsg("ok");
@@ -254,20 +262,28 @@ public class ArtServiceImpl implements IArtServiceApi  {
 
     /**
      * 根据token得到usr信息获取对应id文章 es
-     * @param token
+     * @param httpRequest
      * @param params
      * @return
      */
     @Override
-    public ResultList selectByTokenWithUsr(String token, RequestParams params) {
+    public ResultList selectByTokenWithUsr(HttpServletRequest httpRequest, RequestParams params) {
         //调用usr
         try {
-            User usr = handleTokenAuthRes(params.getKey());
+            String token = httpRequest.getHeader("Token");
+            User usr = new User();
+            if (StringHelperUtils.isNotEmpty(token)) {
+                usr  = handleTokenAuthRes(token);
+            }
             //request
             SearchRequest request = new SearchRequest("article");
             //DSL
             BoolQueryBuilder queryBuilder = new BoolQueryBuilder();
-            queryBuilder.must(QueryBuilders.termQuery("usrId",usr.getUsrId()));
+            if(StringHelperUtils.isNotEmpty(params.getKey())){
+                queryBuilder.must(QueryBuilders.termQuery("usrId",params.getKey()));
+            }else{
+                queryBuilder.must(QueryBuilders.termQuery("usrId",usr.getUsrId()));
+            }
             //组装好的查询条件放入
             request.source().query(queryBuilder);
             //分页 from 为当前页面在总数据中的第几条数据
