@@ -152,9 +152,14 @@
 
   <!-- 采用in,当id不是主键或者索引的时候,in的性能随着数据变多,会比or好很多 -->
   <select id="selectBatchByIds" resultMap="BaseResultMap" parameterType="java.util.List">
-    select * from usr_table
-    <foreach collection="ids" item="item" open="where usr_id in(" close=")" separator=",">
-      #{item}
-    </foreach>
+    select
+    <include refid="Base_Column_List" />
+    from usr_table
+    where 1 = 1
+    <if test="ids != null">
+      <foreach collection="ids" item="item" open="where usr_id in(" close=")" separator=",">
+        #{item}
+      </foreach>
+    </if>
   </select>
 </mapper>

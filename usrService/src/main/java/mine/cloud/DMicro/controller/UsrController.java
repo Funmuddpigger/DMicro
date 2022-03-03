@@ -71,19 +71,19 @@ public class UsrController {
 
     //关注 ---redis 定时任务同步
     @RequestMapping(value = "/follow", method = {RequestMethod.GET,RequestMethod.POST})
-    public ResultList followUser(@RequestBody Integer user){
-        return iUsrServiceApi.followUser(user,request);
+    public ResultList followUser(@RequestBody User user){
+        return iUsrServiceApi.followUser(user.getUsrId(),request);
     }
 
     //得到用户关注信息 ---mysql ,mq ,redis 异步构建
     @RequestMapping(value = "/follower", method = {RequestMethod.GET,RequestMethod.POST})
-    public ResultList getFollowUser(@RequestBody Integer user){
-        return iUsrServiceApi.getFollowUser(request);
+    public ResultList getFollowUser(@RequestBody User user){
+        return iUsrServiceApi.getFollowUser(request,user.getUsrId());
     }
 
     //得到用户粉丝信息 ---mysql
     @RequestMapping(value = "/fans", method = {RequestMethod.GET,RequestMethod.POST})
-    public ResultList getFanAndNum(@RequestBody Integer user){
-        return iUsrServiceApi.getFanAndNum(request);
+    public ResultList getFanAndNum(@RequestBody Integer userId){
+        return iUsrServiceApi.getFanAndNum(request,userId);
     }
 }

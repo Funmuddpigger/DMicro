@@ -182,10 +182,13 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
     }
 
     @Override
-    public ResultList getFollowUser(HttpServletRequest request) {
+    public ResultList getFollowUser(HttpServletRequest request,Integer usrId) {
         try {
             ResultList res = new ResultList();
-            Integer usrId = handleRequestGetToken(request);
+            if(!Objects.isNull(request)){
+                //request is not null ,query myself
+                usrId = handleRequestGetToken(request);
+            }
             Long size = redisTemplate.opsForSet().size("follow:usr:" + usrId);
             List<Integer> followIds = redisTemplate.opsForSet().pop("follow:usr:" + usrId, size);
             List<User> users = userMapper.selectBatchByIds(followIds);
@@ -199,14 +202,28 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
     }
 
     @Override
-    public ResultList getFanAndNum(HttpServletRequest request) {
+    public ResultList getFanAndNum(HttpServletRequest request,Integer tapUsrId) {
         try {
             ResultList res = new ResultList();
-            Integer usrId = handleRequestGetToken(request);
-            Long size = redisTemplate.opsForSet().size("fans:usr:" + usrId);
-            List<Integer> fanIds = redisTemplate.opsForSet().pop("fans:usr:" + usrId, size);
-            List<User> users = userMapper.selectBatchByIds(fanIds);
-            res.setData(users);
+            Integer currentUsrId = handleRequestGetToken(request);
+            //usrId is null ,query mine
+            if(Objects.isNull(tapUsrId)){
+                tapUsrId = currentUsrId;
+            }
+            Long size = redisTemplate.opsForSet().size("fans:usr:" + tapUsrId);
+            List<Integer> fanIds = redisTemplate.opsForSet().pop("fans:usr:" + tapUsrId, size);
+
+            //no fans jump
+            if(size>0){
+                List<User> users = userMapper.selectBatchByIds(fanIds);
+                res.setData(users);
+                Boolean isFollow = redisTemplate.opsForSet().isMember("fans:usr:" + tapUsrId, currentUsrId);
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("isFollowed",isFollow);
+                res.setMapData(map);
+            }
+
+            res.setOneData(size);
             res.setCode(HttpStatusCode.HTTP_OK);
             res.setMsg("ok");
             return res;
@@ -240,7 +257,7 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
      * @throws Exception
      */
     private Integer handleRequestGetToken(HttpServletRequest request) throws Exception {
-        String token = request.getHeader("Token");
+        String token = request.getHeader("token");
         Claims claims = JwtUtil.parseJWT(token);
         return Integer.valueOf(claims.getSubject());
     }

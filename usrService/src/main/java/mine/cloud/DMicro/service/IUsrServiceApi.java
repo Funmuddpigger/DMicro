@@ -30,7 +30,7 @@ public interface IUsrServiceApi {
 
     ResultList followUser(Integer user, HttpServletRequest request);
 
-    ResultList getFollowUser(HttpServletRequest request);
+    ResultList getFollowUser(HttpServletRequest request,Integer usrId);
 
-    ResultList getFanAndNum(HttpServletRequest request);
+    ResultList getFanAndNum(HttpServletRequest request,Integer usrId);
 }

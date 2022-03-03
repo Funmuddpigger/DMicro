@@ -48,10 +48,7 @@ import org.springframework.util.ObjectUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 
 @Service
@@ -270,7 +267,8 @@ public class ArtServiceImpl implements IArtServiceApi  {
     public ResultList selectByTokenWithUsr(HttpServletRequest httpRequest, RequestParams params) {
         //调用usr
         try {
-            String token = httpRequest.getHeader("Token");
+            ResultList usrRes = new ResultList();
+            String token = httpRequest.getHeader("token");
             User usr = new User();
             if (StringHelperUtils.isNotEmpty(token)) {
                 usr  = handleTokenAuthRes(token);
@@ -280,9 +278,13 @@ public class ArtServiceImpl implements IArtServiceApi  {
             //DSL
             BoolQueryBuilder queryBuilder = new BoolQueryBuilder();
             if(StringHelperUtils.isNotEmpty(params.getKey())){
+                //查询别人
                 queryBuilder.must(QueryBuilders.termQuery("usrId",params.getKey()));
+                usrRes = usrClient.getFanAndNum(token,Integer.valueOf(params.getKey()));
             }else{
+                //查询自己
                 queryBuilder.must(QueryBuilders.termQuery("usrId",usr.getUsrId()));
+                usrRes =usrClient.getFanAndNum(token,Integer.valueOf(usr.getUsrId()));
             }
             //组装好的查询条件放入
             request.source().query(queryBuilder);
@@ -291,6 +293,22 @@ public class ArtServiceImpl implements IArtServiceApi  {
             //发送请求--全文检索查询
             SearchResponse response = client.search(request, RequestOptions.DEFAULT);
             ResultList res = handleResponse(response);
+            //if query succeed
+            if(HttpStatusCode.HTTP_OK == usrRes.getCode()){
+                Integer fansNum = (Integer) usrRes.getOneData();
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("fansNum", fansNum);
+               //no fans jump
+                if(fansNum>0){
+                    map.put("fans",usrRes.getData());
+                    map.put("isFollowed",usrRes.getMapData().get("isFollowed"));
+                }
+                map.put("isFollowed",false);
+                res.setMapData(map);
+            }
+            //TODO 放入点开文章用户信息
+
+            //back res
             res.setMsg("ok");
             res.setCode(HttpStatusCode.HTTP_OK);
             res.setOneData(usr);

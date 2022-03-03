@@ -18,5 +18,13 @@ public interface UsrClient {
      * @return
      */
     @PostMapping("/user/if-auth")
-    ResultList getAuthAndCheck(@RequestHeader(name = "Token") String token);
+    ResultList getAuthAndCheck(@RequestHeader(name = "token") String token);
+
+    /**
+     * 提供usrServive得到fans数和info
+     * @param userId
+     * @return
+     */
+    @PostMapping("/user/fans")
+    ResultList getFanAndNum(@RequestHeader String token,@RequestBody Integer userId);
 }

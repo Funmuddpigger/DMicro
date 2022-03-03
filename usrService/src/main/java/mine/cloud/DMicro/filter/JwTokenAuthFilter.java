@@ -32,7 +32,7 @@ public class JwTokenAuthFilter extends OncePerRequestFilter {
 
 
         //get token
-        String token = httpServletRequest.getHeader("Token");
+        String token = httpServletRequest.getHeader("token");
         if(!StringHelperUtils.isNotEmpty(token)){
             //无token,放行
             filterChain.doFilter(httpServletRequest,httpServletResponse);
