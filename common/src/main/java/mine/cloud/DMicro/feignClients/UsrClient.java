@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
 @FeignClient("usr-service")
 public interface UsrClient {
 
-    @GetMapping("/user/select-by-id")
-    User selectByPK(@RequestBody Integer usrId);
+    @PostMapping("/user/select-by-id")
+    User selectByPK(@RequestHeader(name = "token") String token,@RequestBody Integer usrId);
 
     /**
      * 提供usrService验证token

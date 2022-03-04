@@ -53,7 +53,7 @@ public class UsrController {
 
     //验证登录用户 解析token ---redis
     @RequestMapping(value = "/if-auth", method = {RequestMethod.GET,RequestMethod.POST})
-    public ResultList checkTokenAndUsr(@RequestHeader(name = "Token") String token){
+    public ResultList checkTokenAndUsr(@RequestHeader(name = "token") String token){
         return iUsrServiceApi.checkTokenAndUsr(token);
     }
 

@@ -155,11 +155,16 @@
     select
     <include refid="Base_Column_List" />
     from usr_table
-    where 1 = 1
-    <if test="ids != null">
-      <foreach collection="ids" item="item" open="where usr_id in(" close=")" separator=",">
-        #{item}
-      </foreach>
-    </if>
+    <choose>
+      <when test="ids != null">
+        <foreach collection="ids" item="item" open="where usr_id in(" close=")" separator=",">
+          #{item}
+        </foreach>
+      </when>
+      <otherwise>
+            where 1 = 1
+      </otherwise>
+    </choose>
+
   </select>
 </mapper>

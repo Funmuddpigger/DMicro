@@ -42,7 +42,7 @@ public class DefaultSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 // 对于登录接口 允许匿名访问
-                .antMatchers(HttpMethod.POST,"/user/login","/user/register","/article/**").permitAll()
+                .antMatchers(HttpMethod.POST,"/user/login","/user/insert","/article/**").permitAll()
                 .antMatchers(HttpMethod.POST,"/article/insert","/article/mine","/article/del").authenticated()
                 // 除上面外的所有请求全部需要鉴权认证
                 .anyRequest().authenticated();

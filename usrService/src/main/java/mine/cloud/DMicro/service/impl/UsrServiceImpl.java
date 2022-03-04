@@ -9,7 +9,9 @@ import mine.cloud.DMicro.utils.JwtUtil;
 import mine.cloud.DMicro.utils.Result;
 import mine.cloud.DMicro.utils.ResultList;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,10 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -74,6 +73,7 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
         Date date = new Date();
         user.setUsrCreateTime(date);
         user.setUsrMoney(100L);
+        user.setUsrFans(0L);
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         user.setUsrPassword(passwordEncoder.encode(user.getUsrPassword()));
         userMapper.insertSelective(user);
@@ -173,8 +173,8 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
                 //who is not his fans
                 redisTemplate.opsForSet().remove("fans:usr:" + followUsrId, usrId);
             }
-            //exist follow or not
-            res.setOneData(exist);
+            //exist following or not
+            res.setOneData(!exist);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -211,10 +211,15 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
                 tapUsrId = currentUsrId;
             }
             Long size = redisTemplate.opsForSet().size("fans:usr:" + tapUsrId);
-            List<Integer> fanIds = redisTemplate.opsForSet().pop("fans:usr:" + tapUsrId, size);
+            Cursor<Integer> cursor = redisTemplate.opsForSet().scan("fans:usr:" + tapUsrId, ScanOptions.NONE);
 
             //no fans jump
-            if(size>0){
+            ArrayList<Integer> fanIds = new ArrayList<>();
+            while(cursor.hasNext()){
+                fanIds.add(cursor.next());
+            }
+
+            if(fanIds.size()>0){
                 List<User> users = userMapper.selectBatchByIds(fanIds);
                 res.setData(users);
                 Boolean isFollow = redisTemplate.opsForSet().isMember("fans:usr:" + tapUsrId, currentUsrId);
@@ -223,6 +228,9 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
                 res.setMapData(map);
             }
 
+            //close
+            cursor.close();
+            //set res
             res.setOneData(size);
             res.setCode(HttpStatusCode.HTTP_OK);
             res.setMsg("ok");

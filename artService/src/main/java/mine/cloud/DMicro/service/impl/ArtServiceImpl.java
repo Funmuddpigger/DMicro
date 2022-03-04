@@ -87,9 +87,10 @@ public class ArtServiceImpl implements IArtServiceApi  {
     @Override
     public Article selectByPKWithUsr(Integer artId) {
         Article article = articleMapper.selectByPrimaryKey(artId);
+        //写死---防止报错
+        String token = "123";
         //利用feign调用
-        User user = usrClient.selectByPK(article.getUsrId());
-
+        User user = usrClient.selectByPK(token,article.getUsrId());
         article.setUser(user);
         return article;
     }
@@ -270,19 +271,19 @@ public class ArtServiceImpl implements IArtServiceApi  {
             ResultList usrRes = new ResultList();
             String token = httpRequest.getHeader("token");
             User usr = new User();
-            if (StringHelperUtils.isNotEmpty(token)) {
-                usr  = handleTokenAuthRes(token);
-            }
             //request
             SearchRequest request = new SearchRequest("article");
             //DSL
             BoolQueryBuilder queryBuilder = new BoolQueryBuilder();
             if(StringHelperUtils.isNotEmpty(params.getKey())){
                 //查询别人
+                Integer usrId = Integer.valueOf(params.getKey());
+                usr = usrClient.selectByPK(token,usrId);
                 queryBuilder.must(QueryBuilders.termQuery("usrId",params.getKey()));
-                usrRes = usrClient.getFanAndNum(token,Integer.valueOf(params.getKey()));
+                usrRes = usrClient.getFanAndNum(token, usrId);
             }else{
                 //查询自己
+                usr  = handleTokenAuthRes(token);
                 queryBuilder.must(QueryBuilders.termQuery("usrId",usr.getUsrId()));
                 usrRes =usrClient.getFanAndNum(token,Integer.valueOf(usr.getUsrId()));
             }
@@ -302,12 +303,11 @@ public class ArtServiceImpl implements IArtServiceApi  {
                 if(fansNum>0){
                     map.put("fans",usrRes.getData());
                     map.put("isFollowed",usrRes.getMapData().get("isFollowed"));
+                }else{
+                    map.put("isFollowed",false);
                 }
-                map.put("isFollowed",false);
                 res.setMapData(map);
             }
-            //TODO 放入点开文章用户信息
-
             //back res
             res.setMsg("ok");
             res.setCode(HttpStatusCode.HTTP_OK);
