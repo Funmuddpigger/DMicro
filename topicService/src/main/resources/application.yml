@@ -8,6 +8,15 @@ spring:
         server-addr: 47.113.205.0:8848
       config:
         server-addr: 47.113.205.0:8848
+  rabbitmq:
+    host: 119.23.78.113 #主机名
+    port: 5672
+    virtual-host: / #虚拟主机
+    username: root #用户名
+    password: nibaba #密码
+    listener:
+      simple:
+        prefetch: 1 #每次只能获取一条消息,处理完成才能获取下一个
   #        cluster-name: xx #自定义集群名称
 #  配置文件配置：
   datasource:
@@ -35,7 +44,7 @@ spring:
     # redis端口（默认为6379）
     port: 6379
     # redis访问密码（默认为空）
-    password:
+    password: yourbaba
     # redis连接超时时间（单位为毫秒）
     timeout: 2000
     # redis连接池配置

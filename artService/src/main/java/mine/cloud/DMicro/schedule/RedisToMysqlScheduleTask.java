@@ -1,4 +1,4 @@
-package mine.cloud.DMicro.config;
+package mine.cloud.DMicro.schedule;
 
 import mine.cloud.DMicro.dao.ArticleMapper;
 import mine.cloud.DMicro.doc.ArticleDoc;

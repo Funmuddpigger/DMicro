@@ -42,6 +42,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 
@@ -361,6 +362,7 @@ public class ArtServiceImpl implements IArtServiceApi  {
      * @param token
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultList saveArticle(String token,Article article) {
         ResultList res = new ResultList();

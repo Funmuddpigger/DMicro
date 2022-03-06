@@ -89,7 +89,7 @@ public class ArticleController {
         return iArtServiceApi.tapArticleLike(params);
     }
 
-    //文章点赞功能  --redis
+    //文章阅读功能  --redis
     @RequestMapping(value = "/read",method = {RequestMethod.POST})
     public ResultList tapArticleRead(@RequestBody RequestParamsRedisArtUsr params){
         return iArtServiceApi.tapArticleRead(params);
