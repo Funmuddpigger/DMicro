@@ -358,15 +358,21 @@ public class ArtServiceImpl implements IArtServiceApi  {
     /**
      * 文章保存
      * @param article
+     * @param token
      * @return
      */
     @Override
-    public ResultList saveArticle(Article article) {
+    public ResultList saveArticle(String token,Article article) {
         ResultList res = new ResultList();
+        User usr = handleTokenAuthRes(token);
+        if(Objects.isNull(usr)){
+            throw new RuntimeException("token 无效");
+        }
         res.setCode(HttpStatusCode.HTTP_OK);
         article.setArtPostime(new Date());
         article.setArtLike(0L);
         article.setArtRead(0L);
+        article.setUsrId(usr.getUsrId());
         int inCount = articleMapper.insertSelective(article);
         if(inCount <= 0){
             res.setMsg("插入失败");

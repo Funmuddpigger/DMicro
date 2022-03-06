@@ -73,8 +73,8 @@ public class ArticleController {
 
     //文章添加功能 
     @RequestMapping(value = "/insert",method = {RequestMethod.POST})
-    public ResultList insertArticle(@RequestBody Article article){
-        return iArtServiceApi.saveArticle(article);
+    public ResultList insertArticle(@RequestHeader("token") String token ,@RequestBody Article article){
+        return iArtServiceApi.saveArticle(token,article);
     }
 
     //文章更新功能 

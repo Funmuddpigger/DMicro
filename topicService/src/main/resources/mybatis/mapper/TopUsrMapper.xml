@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mine.cloud.DMicro.dao.TopUsrMapper">
+  <resultMap id="BaseResultMap" type="mine.cloud.DMicro.pojo.TopUsr">
+    <id column="topic_usr_id" jdbcType="INTEGER" property="topicUsrId" />
+    <result column="topic_usr_post_time" jdbcType="TIMESTAMP" property="topicUsrPostTime" />
+    <result column="usr_id" jdbcType="INTEGER" property="usrId" />
+    <result column="topic_id" jdbcType="INTEGER" property="topicId" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="mine.cloud.DMicro.pojo.TopUsr">
+    <result column="topic_usr_text" jdbcType="CLOB" property="topicUsrText" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    topic_usr_id, topic_usr_post_time, usr_id, topic_id
+  </sql>
+  <sql id="Blob_Column_List">
+    topic_usr_text
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from top_usr_table
+    where topic_usr_id = #{topicUsrId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from top_usr_table
+    where topic_usr_id = #{topicUsrId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="mine.cloud.DMicro.pojo.TopUsr">
+    insert into top_usr_table (topic_usr_id, topic_usr_post_time, usr_id, 
+      topic_id, topic_usr_text)
+    values (#{topicUsrId,jdbcType=INTEGER}, #{topicUsrPostTime,jdbcType=TIMESTAMP}, #{usrId,jdbcType=INTEGER}, 
+      #{topicId,jdbcType=INTEGER}, #{topicUsrText,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="topicUsrId" parameterType="mine.cloud.DMicro.pojo.TopUsr">
+    insert into top_usr_table
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="topicUsrId != null">
+        topic_usr_id,
+      </if>
+      <if test="topicUsrPostTime != null">
+        topic_usr_post_time,
+      </if>
+      <if test="usrId != null">
+        usr_id,
+      </if>
+      <if test="topicId != null">
+        topic_id,
+      </if>
+      <if test="topicUsrText != null">
+        topic_usr_text,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="topicUsrId != null">
+        #{topicUsrId,jdbcType=INTEGER},
+      </if>
+      <if test="topicUsrPostTime != null">
+        #{topicUsrPostTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="usrId != null">
+        #{usrId,jdbcType=INTEGER},
+      </if>
+      <if test="topicId != null">
+        #{topicId,jdbcType=INTEGER},
+      </if>
+      <if test="topicUsrText != null">
+        #{topicUsrText,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="mine.cloud.DMicro.pojo.TopUsr">
+    update top_usr_table
+    <set>
+      <if test="topicUsrPostTime != null">
+        topic_usr_post_time = #{topicUsrPostTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="usrId != null">
+        usr_id = #{usrId,jdbcType=INTEGER},
+      </if>
+      <if test="topicId != null">
+        topic_id = #{topicId,jdbcType=INTEGER},
+      </if>
+      <if test="topicUsrText != null">
+        topic_usr_text = #{topicUsrText,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where topic_usr_id = #{topicUsrId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="mine.cloud.DMicro.pojo.TopUsr">
+    update top_usr_table
+    set topic_usr_post_time = #{topicUsrPostTime,jdbcType=TIMESTAMP},
+      usr_id = #{usrId,jdbcType=INTEGER},
+      topic_id = #{topicId,jdbcType=INTEGER},
+      topic_usr_text = #{topicUsrText,jdbcType=LONGVARCHAR}
+    where topic_usr_id = #{topicUsrId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="mine.cloud.DMicro.pojo.TopUsr">
+    update top_usr_table
+    set topic_usr_post_time = #{topicUsrPostTime,jdbcType=TIMESTAMP},
+      usr_id = #{usrId,jdbcType=INTEGER},
+      topic_id = #{topicId,jdbcType=INTEGER}
+    where topic_usr_id = #{topicUsrId,jdbcType=INTEGER}
+  </update>
+</mapper>

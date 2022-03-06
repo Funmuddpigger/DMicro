@@ -28,7 +28,7 @@ public interface IArtServiceApi {
     List<String> getESSuggestWord(String suggestKey);
 
     //insert
-    ResultList saveArticle(Article article);
+    ResultList saveArticle(String token,Article article);
 
     //uodate
     ResultList updateArticle(Article article);

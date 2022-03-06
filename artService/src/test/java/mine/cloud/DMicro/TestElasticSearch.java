@@ -29,6 +29,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.search.suggest.Suggest;
 import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilders;
 import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
@@ -43,6 +44,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @SpringBootTest
 public class TestElasticSearch {
@@ -205,20 +207,22 @@ public class TestElasticSearch {
         request.source().suggest(new SuggestBuilder().addSuggestion(
            "suggestions",
                 SuggestBuilders.completionSuggestion("suggestion")
-                .prefix("mg")
+                .prefix("m")
                 .skipDuplicates(true)
                 .size(10)
         ));
         //发起请求
         SearchResponse response = client.search(request, RequestOptions.DEFAULT);
         //解析结果
+        Suggest suggest = response.getSuggest();
         CompletionSuggestion suggestion  = response.getSuggest().getSuggestion("suggestions");
         //遍历自动补全数值数组
         List<CompletionSuggestion.Entry.Option> options = suggestion.getOptions();
         //遍历
         for(CompletionSuggestion.Entry.Option option : options){
             String res = option.getText().toString();
-            System.out.println(res);
+            String id = option.getHit().getId();
+            System.out.println(id);
         }
     }
 

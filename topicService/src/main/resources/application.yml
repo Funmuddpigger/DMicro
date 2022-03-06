@@ -1,7 +1,7 @@
 #nacos配置方式
 spring:
   application:
-    name: usr-service
+    name: topic-service
   cloud:
     nacos:
       discovery:
@@ -39,7 +39,7 @@ spring:
     # redis连接超时时间（单位为毫秒）
     timeout: 2000
     # redis连接池配置
-    database: 3
+    database: 5
     lettuce:
       pool:
         max-active: 6
@@ -47,10 +47,10 @@ spring:
         max-idle: 16
         min-idle: 0
       timeout: 3000
-      shutdown-timeout: 100
+      shutdown-timeout: 60
 
 server:
-  port: 5050
+  port: 10010
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
