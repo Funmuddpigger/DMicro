@@ -36,7 +36,7 @@ public class TopicController {
 
     //话题自动补全功能
     @RequestMapping(value = "/suggest",method = {RequestMethod.GET,RequestMethod.POST})
-    public Map<String, String> getSuggestions(@RequestParam("suggestKey") String suggestKey){
+    public ResultList getSuggestions(@RequestParam("suggestKey") String suggestKey){
         return iTopicService.getESSuggestWord(suggestKey);
     }
 
@@ -52,6 +52,15 @@ public class TopicController {
         return iTopicService.delTopicViewWithUsr(token,params.getTopicId());
     }
 
+    //发布吐槽
+    @RequestMapping(value = "/get-top",method = {RequestMethod.GET,RequestMethod.POST})
+    public ResultList getTopTopic(@RequestParam("last") Integer last){
+        return iTopicService.getTopTopic(last);
+    }
 
-
+    //删除吐槽
+    @RequestMapping(value = "/get",method = {RequestMethod.GET,RequestMethod.POST})
+    public ResultList getTopUsrView(@RequestHeader(value="token" ,required=false) String token, @RequestBody(required=false) TopUsr params){
+        return iTopicService.getTopicBySelective(token,params);
+    }
 }

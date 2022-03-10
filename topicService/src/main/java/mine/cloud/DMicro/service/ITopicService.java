@@ -20,7 +20,7 @@ public interface ITopicService {
     ResultList selectByESKeyWord(RequestParams params);
 
     //topic suggest es
-    Map<String,String> getESSuggestWord(String suggestKey);
+    ResultList getESSuggestWord(String suggestKey);
 
     //Post topic view --redis
     ResultList addTopicViewWithUsr(String token,TopUsr record);
@@ -35,4 +35,8 @@ public interface ITopicService {
     void esTopicInsertOrUpdate(Topic topic);
 
     void esTopicDelete(Integer id);
+
+    ResultList getTopTopic(Integer last);
+
+    ResultList getTopicBySelective(String token,TopUsr recordd);
 }

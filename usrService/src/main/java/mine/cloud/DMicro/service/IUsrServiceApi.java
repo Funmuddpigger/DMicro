@@ -8,10 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 public interface IUsrServiceApi {
 
     //select by pk
-    User selectByPrimaryKey(Integer usrId);
+    ResultList selectByPrimaryKey(String token);
 
     //select by selective
-    ResultList selectOneBySelective(User user);
+    ResultList selectOneBySelective(String token,User user);
 
     //update
     ResultList updateUserBySelective(User user);

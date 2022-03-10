@@ -9,16 +9,20 @@ spring:
         server-addr: 47.113.205.0:3306:8848
     gateway:
       routes:
-        - id: r-xxxservice #第一个路由标识,必须唯一
+        - id: usr-service #第一个路由标识,必须唯一
             uri: lb://xxxservice #路由的目标地址(服务名称或者ip地址都行)  lb代表loadbalance
             predicates: #路由断言,判断请求是否符合规则
-              - Path=/xxx/** #路径断言,判断路径是否以/xxx开头,如果是则符合
+              - Path=/user/** #路径断言,判断路径是否以/xxx开头,如果是则符合
+        - id: art-service #第一个路由标识,必须唯一
+            uri: lb://art-service #路由的目标地址(服务名称或者ip地址都行)  lb代表loadbalance
+            predicates: #路由断言,判断请求是否符合规则
+              - Path=/article/** #路径断言,判断路径是否以/xxx开头,如果是则符合
             filters:
               - AddRequestHeader = key,value #过滤器:加入请求头key,值value
               - id: r-xxxservice #第二个路由标识,必须唯一
                 uri: lb://xxxservice #路由的目标地址
                 predicates: #路由断言,判断请求是否符合规则
-                  - Path=/xxx/** #路径断言,判断路径是否以/xxx开头,如果是则符合
+                  - Path=/user/** #路径断言,判断路径是否以/xxx开头,如果是则符合
       default-filters: #默认过滤器,会对所有的路由请求都生效
         - AddRequestHeader = key,value #过滤器:加入请求头key,值value
       globalcors: #全局跨域处理

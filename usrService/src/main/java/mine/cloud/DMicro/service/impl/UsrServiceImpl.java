@@ -39,12 +39,13 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
     private RedisTemplate redisTemplate;
 
     @Override
-    public User selectByPrimaryKey(Integer usrId) {
-        return userMapper.selectByPrimaryKey(usrId);
+    public ResultList selectByPrimaryKey(String token) {
+        ResultList res = checkTokenAndUsr(token);
+        return res;
     }
 
     @Override
-    public ResultList selectOneBySelective(User user) {
+    public ResultList selectOneBySelective(String token,User user) {
         ResultList res = new ResultList();
         User usr = userMapper.selectOneBySelective(user);
         res.setOneData(usr);

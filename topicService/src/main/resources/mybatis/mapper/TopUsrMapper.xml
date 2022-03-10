@@ -8,7 +8,7 @@
     <result column="topic_id" jdbcType="INTEGER" property="topicId" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="mine.cloud.DMicro.pojo.TopUsr">
-    <result column="topic_usr_text" jdbcType="CLOB" property="topicUsrText" />
+    <result column="topic_usr_text" jdbcType="LONGVARCHAR" property="topicUsrText" />
   </resultMap>
   <sql id="Base_Column_List">
     topic_usr_id, topic_usr_post_time, usr_id, topic_id
@@ -23,6 +23,29 @@
     <include refid="Blob_Column_List" />
     from top_usr_table
     where topic_usr_id = #{topicUsrId,jdbcType=INTEGER}
+  </select>
+  <select id="selectBySelectives" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from top_usr_table
+    where 1=1
+    <if test="topicUsrId != null">
+        AND  topic_usr_id = #{topicUsrId,jdbcType=INTEGER}
+    </if>
+    <if test="topicUsrPostTime != null">
+        AND  topic_usr_post_time = #{topicUsrPostTime,jdbcType=TIMESTAMP}
+    </if>
+    <if test="usrId != null">
+        AND  usr_id = #{usrId,jdbcType=INTEGER}
+    </if>
+    <if test="topicId != null">
+        AND  topic_id = #{topicId,jdbcType=INTEGER}
+    </if>
+    <if test="topicUsrText != null">
+        AND  topic_usr_text = #{topicUsrText,jdbcType=LONGVARCHAR}
+    </if>
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from top_usr_table

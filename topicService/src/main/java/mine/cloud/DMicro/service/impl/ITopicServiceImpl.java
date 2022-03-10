@@ -140,7 +140,8 @@ public class ITopicServiceImpl implements ITopicService, ITopUsrService {
     }
 
     @Override
-    public Map<String,String> getESSuggestWord(String suggestKey) {
+    public ResultList getESSuggestWord(String suggestKey) {
+        ResultList res = new ResultList();
         try {
             URLDecoder.decode(suggestKey,"UTF-8");
             //Request
@@ -157,10 +158,14 @@ public class ITopicServiceImpl implements ITopicService, ITopUsrService {
             CompletionSuggestion suggestions = response.getSuggest().getSuggestion("topic_search_suggestions");
             //get data
             List<CompletionSuggestion.Entry.Option> options = suggestions.getOptions();
-            HashMap<String, String> res = new HashMap<>();
+            ArrayList<HashMap> lists = new ArrayList<>();
             for(CompletionSuggestion.Entry.Option option : options){
-                res.put(option.getHit().getId(),option.getText().toString());
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("id",option.getHit().getId());
+                map.put("value",option.getText().toString());
+                lists.add(map);
             }
+            res.setData(lists);
             return res;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -171,6 +176,7 @@ public class ITopicServiceImpl implements ITopicService, ITopUsrService {
     @Override
     public ResultList addTopicViewWithUsr(String token, TopUsr record) {
         ResultList res = new ResultList();
+        User user = handleTokenAuthRes(token);
         // topic id is null ,insert
         if(Objects.isNull(record.getTopicId())){
             Topic topic = new Topic();
@@ -179,11 +185,10 @@ public class ITopicServiceImpl implements ITopicService, ITopUsrService {
             topic = (Topic) res.getOneData();
             //初始化redis topic排行
             redisTemplate.opsForZSet().add("topic:quote",record.getTopicId(),0);
-            record.setUsrId(topic.getTopicCreateUsr());
-            record.setTopicUsrPostTime(topic.getTopicCreateTime());
+            record.setUsrId(user.getUsrId());
+            record.setTopicUsrPostTime(new Date());
         }else{
             //topic exist
-            User user = handleTokenAuthRes(token);
             record.setUsrId(user.getUsrId());
             record.setTopicUsrPostTime(new Date());
         }
@@ -236,6 +241,42 @@ public class ITopicServiceImpl implements ITopicService, ITopUsrService {
     @Override
     public void esTopicDelete(Integer id) {
         //TODO del
+    }
+
+    @Override
+    public ResultList getTopTopic(Integer last) {
+        ResultList res = new ResultList();
+        Set<Integer> rank = redisTemplate.opsForZSet().reverseRange("topic:quote", 0, last-1);
+        ArrayList<Topic> topics = new ArrayList<>();
+        for(Integer i : rank){
+            Topic topic = topicMapper.selectByPrimaryKey(i);
+            topics.add(topic);
+        }
+        res.setData(topics);
+        res.setMsg("ok");
+        res.setCode(HttpStatusCode.HTTP_OK);
+        return res;
+    }
+
+    @Override
+    public ResultList getTopicBySelective(String token, TopUsr record) {
+        ResultList res = new ResultList();
+        List<TopUsr> topUsrs = topUsrMapper.selectBySelectives(record);
+
+        ArrayList<HashMap> maps = new ArrayList<>();
+        for(TopUsr topUsr : topUsrs){
+            HashMap<String, Object> map = new HashMap<>();
+            User user = usrClient.selectByPK(token, topUsr.getUsrId());
+            Topic topic = topicMapper.selectByPrimaryKey(topUsr.getTopicId());
+            map.put("topicUsr",topUsr);
+            map.put("usrInfo",user);
+            map.put("topic",topic);
+            maps.add(map);
+        }
+        res.setData(maps);
+        res.setCode(HttpStatusCode.HTTP_OK);
+        res.setMsg("ok");
+        return res;
     }
 
     private ResultList handleResponse(SearchResponse response) throws com.fasterxml.jackson.core.JsonProcessingException {

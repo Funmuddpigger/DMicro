@@ -14,12 +14,18 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @SpringBootTest
 public class testTopicES {
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Autowired
     private TopicMapper topicMapper;
@@ -44,5 +50,21 @@ public class testTopicES {
                     .source(mapper.writeValueAsString(topicDoc), XContentType.JSON));
         }
         client.bulk(bulkRequest, RequestOptions.DEFAULT);
+    }
+
+    @Test
+    void testaddRedis(){
+//        redisTemplate.opsForZSet().add("topic:quote", 2, 20L);
+//        redisTemplate.opsForZSet().add("topic:quote", 3, 40L);
+//        redisTemplate.opsForZSet().add("topic:quote", 4, 30L);
+//        redisTemplate.opsForZSet().add("topic:quote", 5, 10L);
+        redisTemplate.opsForZSet().incrementScore("topic:quote",2,1);
+    }
+
+    @Test
+    void testRedis(){
+        Set set = redisTemplate.opsForZSet().reverseRange("topic:quote", 0, 4);
+        ArrayList<Integer> topics = new ArrayList<>();
+
     }
 }

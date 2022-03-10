@@ -29,14 +29,14 @@ public class UsrController {
 
     //查询用户页面by id
     @RequestMapping("/select-by-id")
-    public User queryByUsrId(@RequestBody Integer id){
-        return iUsrServiceApi.selectByPrimaryKey(id);
+    public ResultList queryByUsrId(@RequestHeader("token") String token){
+        return iUsrServiceApi.selectByPrimaryKey(token);
     }
 
     //查询用户 ---sql
     @RequestMapping(value = "/select", method = {RequestMethod.GET,RequestMethod.POST})
-    public ResultList selectOneBySelective(@RequestBody User user){
-        return iUsrServiceApi.selectOneBySelective(user);
+    public ResultList selectOneBySelective(@RequestHeader("token") String token,@RequestBody User user){
+        return iUsrServiceApi.selectOneBySelective(token,user);
     }
 
     //插入用户 ---sql
