@@ -91,7 +91,7 @@ public class ArtServiceImpl implements IArtServiceApi  {
         //写死---防止报错
         String token = "123";
         //利用feign调用
-        User user = usrClient.selectByPK(token,article.getUsrId());
+        User user = (User) usrClient.selectByPK(token,article.getUsrId()).getOneData();
         article.setUser(user);
         return article;
     }
@@ -192,11 +192,13 @@ public class ArtServiceImpl implements IArtServiceApi  {
      * @return
      */
     @Override
-    public ResultList getESArticleByTitleOrType(RequestParamsESArt params) {
+    public ResultList getESArticleByTitleOrType(String token,RequestParamsESArt params) {
         try {
-//            ResultList res = new ResultList();
+            User usr = new User();
             //check token
-            User usr = handleTokenAuthRes(params.getToken());
+            if (!ObjectUtils.isEmpty(token)){
+                usr = handleTokenAuthRes(token);
+            }
 
             String title = params.getTitle();
             String type = params.getType();
@@ -279,7 +281,9 @@ public class ArtServiceImpl implements IArtServiceApi  {
             if(StringHelperUtils.isNotEmpty(params.getKey())){
                 //查询别人
                 Integer usrId = Integer.valueOf(params.getKey());
-                usr = usrClient.selectByPK(token,usrId);
+                Object oneData = usrClient.selectByPK(token, usrId).getOneData();
+                //反序列化
+                usr = new ObjectMapper().convertValue(oneData, User.class);
                 queryBuilder.must(QueryBuilders.termQuery("usrId",params.getKey()));
                 usrRes = usrClient.getFanAndNum(token, usrId);
             }else{

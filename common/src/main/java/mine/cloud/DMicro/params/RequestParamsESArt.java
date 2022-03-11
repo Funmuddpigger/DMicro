@@ -6,5 +6,5 @@ import lombok.Data;
 public class RequestParamsESArt {
     String title;
     String type;
-    String token;
+    Integer id;
 }

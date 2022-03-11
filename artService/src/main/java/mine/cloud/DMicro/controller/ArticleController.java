@@ -50,8 +50,8 @@ public class ArticleController {
 
     //文章根据标题条件搜索--es
     @RequestMapping(value = "/select-es",method = {RequestMethod.GET,RequestMethod.POST})
-    public ResultList getSelectBySelectives(@RequestBody RequestParamsESArt params){
-        return iArtServiceApi.getESArticleByTitleOrType(params);
+    public ResultList getSelectBySelectives(@RequestHeader(value = "token",required = false) String token,@RequestBody RequestParamsESArt params){
+        return iArtServiceApi.getESArticleByTitleOrType(token,params);
     }
 
     //文章自动补全功能

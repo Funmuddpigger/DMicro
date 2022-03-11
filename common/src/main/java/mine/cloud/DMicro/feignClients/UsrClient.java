@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 public interface UsrClient {
 
     @PostMapping("/user/select-by-id")
-    User selectByPK(@RequestHeader(name = "token") String token,@RequestBody Integer usrId);
+    ResultList selectByPK(@RequestHeader(name = "token") String token,@RequestParam(value = "id",required = false) Integer id);
 
     /**
      * 提供usrService验证token

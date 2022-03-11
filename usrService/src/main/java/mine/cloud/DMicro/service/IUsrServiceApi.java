@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 public interface IUsrServiceApi {
 
     //select by pk
-    ResultList selectByPrimaryKey(String token);
+    ResultList selectByPrimaryKey(String token ,Integer id);
 
     //select by selective
     ResultList selectOneBySelective(String token,User user);

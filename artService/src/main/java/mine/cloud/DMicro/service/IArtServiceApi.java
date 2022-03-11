@@ -46,7 +46,7 @@ public interface IArtServiceApi {
 
     ResultList getNewArticle();
 
-    ResultList getESArticleByTitleOrType(RequestParamsESArt params);
+    ResultList getESArticleByTitleOrType(String token,RequestParamsESArt params);
 
     ResultList selectByTokenWithUsr(HttpServletRequest request, RequestParams params);
 

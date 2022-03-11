@@ -21,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -39,8 +40,14 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
     private RedisTemplate redisTemplate;
 
     @Override
-    public ResultList selectByPrimaryKey(String token) {
-        ResultList res = checkTokenAndUsr(token);
+    public ResultList selectByPrimaryKey(String token, Integer id) {
+        ResultList res = new ResultList();
+        if (!ObjectUtils.isEmpty(id)){
+            User user = userMapper.selectByPrimaryKey(id);
+            res.setOneData(user);
+        }else{
+            res = checkTokenAndUsr(token);
+        }
         return res;
     }
 

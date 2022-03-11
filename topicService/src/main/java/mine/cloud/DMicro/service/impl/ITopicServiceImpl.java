@@ -1,15 +1,12 @@
 package mine.cloud.DMicro.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import mine.cloud.DMicro.dao.TopUsrMapper;
 import mine.cloud.DMicro.dao.TopicMapper;
-import mine.cloud.DMicro.doc.ArticleDoc;
 import mine.cloud.DMicro.doc.TopicDoc;
 import mine.cloud.DMicro.feignClients.UsrClient;
 import mine.cloud.DMicro.mqQueueType.MqStaticType;
 import mine.cloud.DMicro.params.RequestParams;
-import mine.cloud.DMicro.pojo.Article;
 import mine.cloud.DMicro.pojo.TopUsr;
 import mine.cloud.DMicro.pojo.Topic;
 import mine.cloud.DMicro.pojo.User;
@@ -182,7 +179,8 @@ public class ITopicServiceImpl implements ITopicService, ITopUsrService {
             Topic topic = new Topic();
             topic.setTopicText(record.getTopicText());
             res = addTopicBySelective(token, record);
-            topic = (Topic) res.getOneData();
+            Object top =res.getOneData();
+            topic = new ObjectMapper().convertValue(top, Topic.class);
             //初始化redis topic排行
             redisTemplate.opsForZSet().add("topic:quote",record.getTopicId(),0);
             record.setUsrId(user.getUsrId());
@@ -266,7 +264,8 @@ public class ITopicServiceImpl implements ITopicService, ITopUsrService {
         ArrayList<HashMap> maps = new ArrayList<>();
         for(TopUsr topUsr : topUsrs){
             HashMap<String, Object> map = new HashMap<>();
-            User user = usrClient.selectByPK(token, topUsr.getUsrId());
+            ResultList resUsr = usrClient.selectByPK(token, topUsr.getUsrId());
+            User user = new ObjectMapper().convertValue(resUsr, User.class);
             Topic topic = topicMapper.selectByPrimaryKey(topUsr.getTopicId());
             map.put("topicUsr",topUsr);
             map.put("usrInfo",user);

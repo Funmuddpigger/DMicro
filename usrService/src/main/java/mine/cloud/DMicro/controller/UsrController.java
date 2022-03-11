@@ -29,8 +29,8 @@ public class UsrController {
 
     //查询用户页面by id
     @RequestMapping("/select-by-id")
-    public ResultList queryByUsrId(@RequestHeader("token") String token){
-        return iUsrServiceApi.selectByPrimaryKey(token);
+    public ResultList queryByUsrId(@RequestHeader(value = "token",required = false) String token,@RequestParam(value = "id",required = false) Integer id){
+        return iUsrServiceApi.selectByPrimaryKey(token,id);
     }
 
     //查询用户 ---sql
