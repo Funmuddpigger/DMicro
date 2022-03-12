@@ -2,6 +2,7 @@ package mine.cloud.DMicro.service;
 
 import mine.cloud.DMicro.pojo.User;
 import mine.cloud.DMicro.utils.ResultList;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,4 +34,6 @@ public interface IUsrServiceApi {
     ResultList getFollowUser(HttpServletRequest request,Integer usrId);
 
     ResultList getFanAndNum(HttpServletRequest request,Integer usrId);
+
+    ResultList upLoadImageOrFile(MultipartFile file, HttpServletRequest request);
 }

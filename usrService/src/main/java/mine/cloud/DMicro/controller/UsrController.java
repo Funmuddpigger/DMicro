@@ -6,6 +6,7 @@ import mine.cloud.DMicro.service.IUsrServiceApi;
 import mine.cloud.DMicro.utils.ResultList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -85,5 +86,10 @@ public class UsrController {
     @RequestMapping(value = "/fans", method = {RequestMethod.GET,RequestMethod.POST})
     public ResultList getFanAndNum(@RequestBody Integer userId){
         return iUsrServiceApi.getFanAndNum(request,userId);
+    }
+
+    @RequestMapping("/upload")
+    public ResultList uploadImg(@RequestParam("image") MultipartFile file, HttpServletRequest request)  {
+        return iUsrServiceApi.upLoadImageOrFile(file, request);//这里调用service的upfile方法，传入两个参数。
     }
 }

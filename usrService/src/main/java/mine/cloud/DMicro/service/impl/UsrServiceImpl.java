@@ -4,10 +4,7 @@ import io.jsonwebtoken.Claims;
 import mine.cloud.DMicro.dao.UserMapper;
 import mine.cloud.DMicro.pojo.User;
 import mine.cloud.DMicro.service.IUsrServiceApi;
-import mine.cloud.DMicro.utils.HttpStatusCode;
-import mine.cloud.DMicro.utils.JwtUtil;
-import mine.cloud.DMicro.utils.Result;
-import mine.cloud.DMicro.utils.ResultList;
+import mine.cloud.DMicro.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -22,6 +19,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -246,6 +244,13 @@ public class UsrServiceImpl implements IUsrServiceApi , UserDetailsService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public ResultList upLoadImageOrFile(MultipartFile file, HttpServletRequest request) {
+        ImageUploadUtils imageUploadUtils = new ImageUploadUtils();
+        ResultList res = imageUploadUtils.upLoadFileOrImages(file, request);
+        return res;
     }
 
 

@@ -14,6 +14,6 @@ public class ResultList implements Serializable {
     private String msg; //消息
     private Object oneData;
     private List<?> data; //数据对象
-    private Map<String,Object> mapData;
+    private Map<String,?> mapData;
 
 }
