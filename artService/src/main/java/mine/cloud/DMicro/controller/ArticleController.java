@@ -9,6 +9,7 @@ import mine.cloud.DMicro.service.IArtServiceApi;
 import mine.cloud.DMicro.utils.ResultList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -99,5 +100,10 @@ public class ArticleController {
     @RequestMapping(value = "/del",method = {RequestMethod.POST})
     public ResultList deleteArticleById(@RequestBody Integer artId){
         return iArtServiceApi.deleteArticle(artId);
+    }
+
+    @RequestMapping("/upload")
+    public ResultList uploadImg(@RequestParam("image") MultipartFile file, HttpServletRequest request)  {
+        return iArtServiceApi.upLoadImageOrFile(file, request);//这里调用service的upfile方法，传入两个参数。
     }
 }

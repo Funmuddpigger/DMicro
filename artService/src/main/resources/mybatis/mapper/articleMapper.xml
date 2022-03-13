@@ -11,9 +11,10 @@
     <result column="art_read" jdbcType="BIGINT" property="artRead" />
     <result column="art_text" jdbcType="CLOB" property="artText" />
     <result column="art_summary" jdbcType="VARCHAR" property="artSummary" />
+    <result column="art_url" jdbcType="VARCHAR" property="artUrl" />
   </resultMap>
   <sql id="Base_Column_List">
-    art_id, art_title, art_postime, usr_id, art_type,art_like,art_read,art_text,art_summary
+    art_id, art_title, art_postime, usr_id, art_type,art_like,art_read,art_text,art_summary,art_url
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -53,6 +54,9 @@
     </if>
     <if test="artSummary != null">
       AND art_summary = #{artSummary,jdbcType=VARCHAR}
+    </if>
+    <if test="artUrl != null">
+      AND art_url = #{artUrl,jdbcType=VARCHAR}
     </if>
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
@@ -95,6 +99,9 @@
       <if test="artSummary != null">
         art_summary,
       </if>
+      <if test="artUrl != null">
+        art_url,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="artId != null">
@@ -124,6 +131,9 @@
       <if test="artSummary != null">
         #{artSummary,jdbcType=VARCHAR},
       </if>
+      <if test="artUrl != null">
+        #{artUrl,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="mine.cloud.DMicro.pojo.Article">
@@ -152,6 +162,9 @@
       </if>
       <if test="artSummary != null">
         art_summary = #{artSummary,jdbcType=VARCHAR},
+      </if>
+      <if test="artUrl != null">
+        art_url = #{artSummary,jdbcType=VARCHAR},
       </if>
     </set>
     where art_id = #{artId,jdbcType=INTEGER}

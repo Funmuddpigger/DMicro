@@ -1,5 +1,6 @@
 package mine.cloud.DMicro.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import mine.cloud.DMicro.pojo.User;
 import mine.cloud.DMicro.service.impl.LoginUserDetailsImpl;
@@ -44,7 +45,8 @@ public class JwTokenAuthFilter extends OncePerRequestFilter {
             String usrId = claims.getSubject();
             //get redis
             String redisKey = "loginUser:"+usrId;
-            User userDetails = (User) redisTemplate.opsForValue().get(redisKey);
+            Object usr =  redisTemplate.opsForValue().get(redisKey);
+            User userDetails = new ObjectMapper().convertValue(usr, User.class);
             //set spring security context
             if(Objects.isNull(userDetails)){
                 throw new RuntimeException("用户未登录/凭证已过期");

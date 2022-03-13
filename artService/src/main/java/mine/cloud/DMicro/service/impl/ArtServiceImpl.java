@@ -16,10 +16,7 @@ import mine.cloud.DMicro.pojo.Article;
 import mine.cloud.DMicro.pojo.Comment;
 import mine.cloud.DMicro.pojo.User;
 import mine.cloud.DMicro.service.IArtServiceApi;
-import mine.cloud.DMicro.utils.HttpStatusCode;
-import mine.cloud.DMicro.utils.Result;
-import mine.cloud.DMicro.utils.ResultList;
-import mine.cloud.DMicro.utils.StringHelperUtils;
+import mine.cloud.DMicro.utils.*;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
@@ -44,6 +41,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import javax.servlet.http.HttpServletRequest;
@@ -220,10 +218,12 @@ public class ArtServiceImpl implements IArtServiceApi  {
             //res
             SearchResponse response = client.search(request, RequestOptions.DEFAULT);
             ResultList res = handleResponse(response);
+
+            HashMap<String, Object> map = new HashMap<>();
             //if size >= 1 get first
-            ArticleDoc articleDoc = (ArticleDoc) res.getData().get(0);
             //if have title comment
             if(StringHelperUtils.isNotEmpty(title)){
+                ArticleDoc articleDoc = (ArticleDoc) res.getData().get(0);
                 Integer artId = articleDoc.getArtId();
                 Comment comment = new Comment();
                 comment.setArtId(artId);
@@ -232,27 +232,27 @@ public class ArtServiceImpl implements IArtServiceApi  {
                 if(resComList.getCode()==HttpStatusCode.HTTP_OK){
                     res.setData(resComList.getData());
                 }
+
+                //take usr and check like read follow
+                if(!ObjectUtils.isEmpty(usr)){
+                    Boolean exist = redisTemplate.opsForSet().isMember("likeUser:article:" + articleDoc.getArtId(), usr.getUsrId());
+                    map.put("isLike",exist);
+                }
+                Integer read = (Integer)redisTemplate.opsForHash().get("read::article",articleDoc.getArtId());
+                Long like = redisTemplate.opsForSet().size("likeUser:article:" + articleDoc.getArtId());
+
+                //if null es not redis
+                if(like != null){
+                    articleDoc.setArtLike(like);
+                }
+                if(read != null){
+                    articleDoc.setArtRead(read.longValue());
+                }
+                res.setOneData(articleDoc);
             }
 
-            HashMap<String, Object> map = new HashMap<>();
-            //take usr and check like read follow
-            if(!ObjectUtils.isEmpty(usr)){
-                Boolean exist = redisTemplate.opsForSet().isMember("likeUser:article:" + articleDoc.getArtId(), usr.getUsrId());
-                map.put("isLike",exist);
-            }
-            Integer read = (Integer)redisTemplate.opsForHash().get("read::article",articleDoc.getArtId());
-            Long like = redisTemplate.opsForSet().size("likeUser:article:" + articleDoc.getArtId());
-
-            //if null es not redis
-            if(like != null){
-                articleDoc.setArtLike(like);
-            }
-            if(read != null){
-                articleDoc.setArtRead(read.longValue());
-            }
             map.put("userInfo",usr);
             res.setMapData(map);
-            res.setOneData(articleDoc);
             res.setCode(HttpStatusCode.HTTP_OK);
             res.setMsg("ok");
             return res;
@@ -449,6 +449,13 @@ public class ArtServiceImpl implements IArtServiceApi  {
         res.setCode(HttpStatusCode.HTTP_OK);
         res.setOneData(read);
         res.setMsg("ok");
+        return res;
+    }
+
+    @Override
+    public ResultList upLoadImageOrFile(MultipartFile file, HttpServletRequest request) {
+        ImageUploadUtils imageUploadUtils = new ImageUploadUtils();
+        ResultList res = imageUploadUtils.upLoadFileOrImages(file, request);
         return res;
     }
 

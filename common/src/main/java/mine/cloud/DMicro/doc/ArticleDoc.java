@@ -35,6 +35,8 @@ public class ArticleDoc {
 
     private String artSummary;
 
+    private String artUrl;
+
     private List<String> suggestion;
 
     public ArticleDoc() {
@@ -50,6 +52,7 @@ public class ArticleDoc {
         this.artRead = article.getArtRead();
         this.artText = article.getArtText();
         this.artSummary = article.getArtSummary();
+        this.artUrl = article.getArtUrl();
         this.suggestion = Arrays.asList(this.artTitle,this.artType);
     }
 }

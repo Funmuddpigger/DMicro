@@ -29,6 +29,7 @@ public class Article {
 
     private String artSummary;
 
+    private String artUrl;
 
     public void setArtTitle(String artTitle) {
         this.artTitle = artTitle == null ? null : artTitle.trim();

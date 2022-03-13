@@ -6,6 +6,7 @@ import mine.cloud.DMicro.params.RequestParamsRedisArtUsr;
 import mine.cloud.DMicro.pojo.Article;
 import mine.cloud.DMicro.utils.Result;
 import mine.cloud.DMicro.utils.ResultList;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -53,4 +54,6 @@ public interface IArtServiceApi {
     ResultList tapArticleLike(RequestParamsRedisArtUsr params);
 
     ResultList tapArticleRead(RequestParamsRedisArtUsr params);
+
+    ResultList upLoadImageOrFile(MultipartFile file, HttpServletRequest request);
 }
