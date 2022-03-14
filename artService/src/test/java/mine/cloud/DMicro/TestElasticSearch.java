@@ -7,6 +7,8 @@ import mine.cloud.DMicro.pojo.Article;
 import mine.cloud.DMicro.service.IArtServiceApi;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.bulk.BulkRequest;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -18,6 +20,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -39,6 +42,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -138,7 +142,7 @@ public class TestElasticSearch {
         SearchRequest request = new SearchRequest("article");
         //准备DSL
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
-        boolQuery.must(QueryBuilders.termQuery("artTitle","美国密歇根州霍兰德（Holland）市议会近日批准了全球第二大电池制造商 LG 新能源"));
+        boolQuery.must(QueryBuilders.termQuery("artTitle.title","美国密歇根州霍兰德（Holland）市议会近日批准了全球第二大电池制造商 LG 新能源"));
         //发送请求
         SearchResponse response = client.search(request, RequestOptions.DEFAULT);
         //解析结果
@@ -190,10 +194,11 @@ public class TestElasticSearch {
         //准备Request
         SearchRequest request = new SearchRequest("article");
         //准备DSL
-        request.source().query(QueryBuilders.matchQuery("artType","芯片"));
+        request.source().query(QueryBuilders.multiMatchQuery("谷歌发布Android 12L最后一个Beta更新","artTitle","artSummary","artType"));
+        //request.source().query(QueryBuilders.matchQuery("artTitle","美国"));
         //高亮
         request.source().highlighter(new HighlightBuilder()
-                .field("artType").requireFieldMatch(false));
+                .field("artTitle").field("artSummary").requireFieldMatch(false).preTags("<em style='color:red;'>").postTags("<em>"));
         //发送请求
         SearchResponse response = client.search(request, RequestOptions.DEFAULT);
         //解析结果
@@ -222,7 +227,7 @@ public class TestElasticSearch {
         for(CompletionSuggestion.Entry.Option option : options){
             String res = option.getText().toString();
             String id = option.getHit().getId();
-            System.out.println(id);
+            System.out.println(res);
         }
     }
 
@@ -241,14 +246,30 @@ public class TestElasticSearch {
             //获取高亮
             Map<String, HighlightField> map = h.getHighlightFields();
             if(!CollectionUtils.isEmpty(map)){
-                HighlightField light = map.get("artType");
-                String artType = light.getFragments()[0].string();
                 //覆盖非高亮结果
-                article.setArtType(artType);
-
+                HighlightField titleLight = map.get("artTitle");
+                HighlightField summaryLight = map.get("artSummary");
+                if(!ObjectUtils.isEmpty(titleLight)){
+                    String artTitle = titleLight.getFragments()[0].string();
+                    article.setArtTitle(artTitle);
+                }
+                if(!ObjectUtils.isEmpty(summaryLight)){
+                    String artSummary = summaryLight.getFragments()[0].string();
+                    article.setArtSummary(artSummary);
+                }
             }
             System.out.println(article);
         }
+    }
+    @Test
+    void testDeletedDoc() throws IOException {
+        // request
+        DeleteByQueryRequest request = new DeleteByQueryRequest("article");
+        // dsl send
+        BoolQueryBuilder queryBuilder = new BoolQueryBuilder();
+        queryBuilder.must(QueryBuilders.matchAllQuery());
+        request.setQuery(queryBuilder);
+        client.deleteByQuery(request,RequestOptions.DEFAULT);
     }
 
 

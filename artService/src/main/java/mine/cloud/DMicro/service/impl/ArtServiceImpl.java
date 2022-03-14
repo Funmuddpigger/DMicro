@@ -31,6 +31,8 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilders;
@@ -40,6 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -123,7 +126,7 @@ public class ArtServiceImpl implements IArtServiceApi  {
                 hotRequest.source(mapper.writeValueAsString(hotwordDoc), XContentType.JSON);
                 //发送请求---插入hotword
                 client.index(hotRequest, RequestOptions.DEFAULT);
-                boolQuery.must(QueryBuilders.matchQuery("searchText", word));
+                boolQuery.must(QueryBuilders.multiMatchQuery(word,"artTitle","artSummary","artType"));
             }
             //条件过滤----排序
             if(StringHelperUtils.isNotEmpty(sortBy)){
@@ -134,6 +137,9 @@ public class ArtServiceImpl implements IArtServiceApi  {
                 }            }
             //组装好的查询条件放入
             request.source().query(boolQuery).sort("artPostime",SortOrder.DESC);
+            //高亮
+            request.source().highlighter(new HighlightBuilder()
+                    .field("artTitle").field("artSummary").requireFieldMatch(false).preTags("<em style='color:red;'>").postTags("</em>"));
             //分页 from 为当前页面在总数据中的第几条数据
             request.source().from((page - 1) * pageSize).size(pageSize);
             //发送请求--全文检索查询
@@ -562,6 +568,21 @@ public class ArtServiceImpl implements IArtServiceApi  {
         for (SearchHit h : hits1) {
             String json = h.getSourceAsString();
             ArticleDoc articleDoc = mapper.readValue(json, ArticleDoc.class);
+            //获取高亮
+            Map<String, HighlightField> map = h.getHighlightFields();
+            if(!CollectionUtils.isEmpty(map)){
+                //覆盖非高亮结果
+                HighlightField titleLight = map.get("artTitle");
+                HighlightField summaryLight = map.get("artSummary");
+                if(!ObjectUtils.isEmpty(titleLight)){
+                    String artTitle = titleLight.getFragments()[0].string();
+                    articleDoc.setArtTitle(artTitle);
+                }
+                if(!ObjectUtils.isEmpty(summaryLight)){
+                    String artSummary = summaryLight.getFragments()[0].string();
+                    articleDoc.setArtSummary(artSummary);
+                }
+            }
             data.add(articleDoc);
         }
         res.setData(data);
