@@ -182,7 +182,7 @@ public class ITopicServiceImpl implements ITopicService, ITopUsrService {
             Object top =res.getOneData();
             topic = new ObjectMapper().convertValue(top, Topic.class);
             //初始化redis topic排行
-            redisTemplate.opsForZSet().add("topic:quote",record.getTopicId(),0);
+            redisTemplate.opsForZSet().add("topic:quote",topic.getTopicId(),0);
             record.setUsrId(user.getUsrId());
             record.setTopicUsrPostTime(new Date());
         }else{
@@ -265,7 +265,7 @@ public class ITopicServiceImpl implements ITopicService, ITopUsrService {
         for(TopUsr topUsr : topUsrs){
             HashMap<String, Object> map = new HashMap<>();
             ResultList resUsr = usrClient.selectByPK(token, topUsr.getUsrId());
-            User user = new ObjectMapper().convertValue(resUsr, User.class);
+            User user = new ObjectMapper().convertValue(resUsr.getOneData(), User.class);
             Topic topic = topicMapper.selectByPrimaryKey(topUsr.getTopicId());
             map.put("topicUsr",topUsr);
             map.put("usrInfo",user);

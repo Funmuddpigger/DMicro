@@ -4,7 +4,7 @@ spring:
   main:
     allow-bean-definition-overriding: true
   application:
-    name: gateway-service
+    name: gateway
   cloud:
     nacos:
       discovery:

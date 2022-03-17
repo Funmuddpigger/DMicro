@@ -6,38 +6,22 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 47.113.205.0:3306:8848
+        server-addr: 47.113.205.0:8848
     gateway:
       routes:
         - id: usr-service #第一个路由标识,必须唯一
-            uri: lb://xxxservice #路由的目标地址(服务名称或者ip地址都行)  lb代表loadbalance
-            predicates: #路由断言,判断请求是否符合规则
-              - Path=/user/** #路径断言,判断路径是否以/xxx开头,如果是则符合
+          uri: lb://usr-service #路由的目标地址(服务名称或者ip地址都行)  lb代表loadbalance
+          predicates: #路由断言,判断请求是否符合规则
+            - Path=/user/** #路径断言,判断路径是否以/xxx开头,如果是则符合
         - id: art-service #第一个路由标识,必须唯一
-            uri: lb://art-service #路由的目标地址(服务名称或者ip地址都行)  lb代表loadbalance
-            predicates: #路由断言,判断请求是否符合规则
-              - Path=/article/** #路径断言,判断路径是否以/xxx开头,如果是则符合
-            filters:
-              - AddRequestHeader = key,value #过滤器:加入请求头key,值value
-              - id: r-xxxservice #第二个路由标识,必须唯一
-                uri: lb://xxxservice #路由的目标地址
-                predicates: #路由断言,判断请求是否符合规则
-                  - Path=/user/** #路径断言,判断路径是否以/xxx开头,如果是则符合
-      default-filters: #默认过滤器,会对所有的路由请求都生效
-        - AddRequestHeader = key,value #过滤器:加入请求头key,值value
-      globalcors: #全局跨域处理
-        add-to-simple-url-handler-mapping: true  #解决options请求被拦截问题
-        cors-configurations:
-          '[/**]':
-            allowedOrigins:
-              - "http://localhost:8080"
-              - "http://xxx"
-            allowedHeaders: "*" #允许在请求中携带的头信息
-            allowdMethods:  #允许的跨域ajax的请求方式
-              - "GET"
-              - "POST"
-              - "DELETE"
-              - "PUT"
-              - "OPTIONS"
-            allowCredentials: true #是否允许携带cookie
-            maxAge: 360000 #这次跨域检测的有效期
+          uri: lb://art-service #路由的目标地址(服务名称或者ip地址都行)  lb代表loadbalance
+          predicates: #路由断言,判断请求是否符合规则
+            - Path=/article/** #路径断言,判断路径是否以/xxx开头,如果是则符合
+        - id: com-service #第一个路由标识,必须唯一
+          uri: lb://com-service #路由的目标地址(服务名称或者ip地址都行)  lb代表loadbalance
+          predicates: #路由断言,判断请求是否符合规则
+            - Path=/comment/** #路径断言,判断路径是否以/xxx开头,如果是则符合
+        - id: topic-service #第一个路由标识,必须唯一
+          uri: lb://topic-service #路由的目标地址(服务名称或者ip地址都行)  lb代表loadbalance
+          predicates: #路由断言,判断请求是否符合规则
+            - Path=/topic/** #路径断言,判断路径是否以/xxx开头,如果是则符合

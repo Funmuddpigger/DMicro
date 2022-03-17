@@ -9,11 +9,9 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>gateway</module>
-        <module>mq</module>
         <module>usrService</module>
         <module>artService</module>
         <module>goodService</module>
-        <module>ordService</module>
         <module>common</module>
         <module>commentService</module>
         <module>topicService</module>

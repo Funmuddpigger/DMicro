@@ -58,7 +58,7 @@ public class TopicController {
         return iTopicService.getTopTopic(last);
     }
 
-    //删除吐槽
+    //获得吐槽
     @RequestMapping(value = "/get",method = {RequestMethod.GET,RequestMethod.POST})
     public ResultList getTopUsrView(@RequestHeader(value="token" ,required=false) String token, @RequestBody(required=false) TopUsr params){
         return iTopicService.getTopicBySelective(token,params);

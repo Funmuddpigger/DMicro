@@ -1,5 +1,6 @@
 package mine.cloud.DMicro.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -7,6 +8,7 @@ import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Topic {
     private Integer topicId;
 
