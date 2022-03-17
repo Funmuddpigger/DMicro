@@ -11,6 +11,8 @@
 
     <artifactId>usrService</artifactId>
 
+    <packaging>jar</packaging>
+
     <dependencies>
         <!-- 引入api -->
         <dependency>
@@ -85,6 +87,15 @@
     <build>
         <finalName>app</finalName>
         <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!-- 指定该 Main Class 为全局的唯一入口 -->
+                    <mainClass>mine.cloud.DMicro.UsrServiceApplication</mainClass>
+                    <layout>ZIP</layout>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.mybatis.generator</groupId>
                 <artifactId>mybatis-generator-maven-plugin</artifactId>
