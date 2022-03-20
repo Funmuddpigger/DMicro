@@ -25,3 +25,18 @@ spring:
           uri: lb://topic-service #路由的目标地址(服务名称或者ip地址都行)  lb代表loadbalance
           predicates: #路由断言,判断请求是否符合规则
             - Path=/topic/** #路径断言,判断路径是否以/xxx开头,如果是则符合
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedHeaders: "*"
+            allowedOrigins: "*"
+            allowCredentials: true
+            allowedMethods:
+              - GET
+              - POST
+              - DELETE
+              - PUT
+              - OPTION
+      default-filters:
+        - DedupeResponseHeader=Vary Access-Control-Allow-Credentials Access-Control-Allow-Origin, RETAIN_UNIQUE
+        - DedupeResponseHeader=Access-Control-Allow-Origin, RETAIN_FIRST

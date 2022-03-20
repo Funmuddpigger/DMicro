@@ -26,5 +26,5 @@ public interface UsrClient {
      * @return
      */
     @PostMapping("/user/fans")
-    ResultList getFanAndNum(@RequestHeader String token,@RequestBody Integer userId);
+    ResultList getFanAndNum(@RequestHeader(name="token") String token,@RequestBody Integer userId);
 }

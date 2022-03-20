@@ -85,7 +85,7 @@
 
 
     <build>
-        <finalName>app</finalName>
+        <finalName>usrService</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
