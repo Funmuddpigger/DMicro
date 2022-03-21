@@ -262,14 +262,37 @@ public class TestElasticSearch {
         }
     }
     @Test
-    void testDeletedDoc() throws IOException {
-        // request
-        DeleteByQueryRequest request = new DeleteByQueryRequest("article");
-        // dsl send
-        BoolQueryBuilder queryBuilder = new BoolQueryBuilder();
-        queryBuilder.must(QueryBuilders.matchAllQuery());
-        request.setQuery(queryBuilder);
-        client.deleteByQuery(request,RequestOptions.DEFAULT);
+    public void syncBatchArticleDataToES(){
+        //先删除原有数据，即使直接更新，es也会删除原文档再添加
+        try {
+            // request
+            DeleteByQueryRequest request = new DeleteByQueryRequest("article");
+            // dsl send
+            BoolQueryBuilder queryBuilder = new BoolQueryBuilder();
+            queryBuilder.must(QueryBuilders.matchAllQuery());
+            request.setQuery(queryBuilder);
+            client.deleteByQuery(request, RequestOptions.DEFAULT);
+
+            Article article = new Article();
+            //根据ID查询数据
+            List<Article> articles = articleMapper.selectBySelective(article);
+            //准备Request对象
+            BulkRequest bulkRequest = new BulkRequest();
+            ObjectMapper mapper = new ObjectMapper();
+            for(Article a : articles){
+                //转换为es索引库对应的实体类
+                ArticleDoc articleDoc = new ArticleDoc(a);
+                //转json
+                bulkRequest.add(new IndexRequest("article")
+                        .id(articleDoc.getArtId().toString())
+                        .source(mapper.writeValueAsString(articleDoc), XContentType.JSON));
+            }
+            client.bulk(bulkRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
     }
 
 

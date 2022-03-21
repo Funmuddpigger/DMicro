@@ -5,9 +5,12 @@ import mine.cloud.DMicro.pojo.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @SpringBootTest
@@ -15,6 +18,9 @@ public class testUsr {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Test
     void TestBCryptPassworEncoder(){
@@ -28,14 +34,16 @@ public class testUsr {
     }
 
     @Test
-    void TestBatchUserSelect(){
-        List<Integer> list = new ArrayList<>();
-        list.add(1);
-        list.add(2);
-        list.add(3);
-        List<User> users = userMapper.selectBatchByIds(list);
-        for(User usr : users){
-            System.out.println(usr.getUsrNickname());
+    public void syncUsrDataRedisToMysqlFans(){
+        Long size = redisTemplate.opsForSet().size("change::user");
+        List<Integer> followers = redisTemplate.opsForSet().pop("change::user", size);
+        HashMap<Integer, Long> map = new HashMap<>();
+        for (Integer usrId : followers){
+            Long fans = redisTemplate.opsForSet().size("usr:fans:" + usrId);
+            map.put(usrId,fans);
+        }
+        if(CollectionUtils.isEmpty(map)){
+            userMapper.updateByPrimaryKeyFansForeach(map);
         }
     }
 }

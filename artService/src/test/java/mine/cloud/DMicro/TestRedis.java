@@ -1,13 +1,18 @@
 package mine.cloud.DMicro;
 
+import mine.cloud.DMicro.dao.ArticleMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.util.CollectionUtils;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @SpringBootTest
@@ -15,6 +20,9 @@ public class TestRedis {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private ArticleMapper articleMapper;
 
     @Test
     public void testRedisValue(){
@@ -24,33 +32,40 @@ public class TestRedis {
     }
 
     @Test
-    public void testRedisList(){
-        Object o = redisTemplate.opsForHash().get("read::article",9);
-        System.out.println(o);
-//        Cursor<Map.Entry<Integer,Long>> scan = redisTemplate.opsForHash().scan("read::article", ScanOptions.NONE);
-//        HashMap<Integer, Long> map = new HashMap<>();
-//        while(scan.hasNext()){
-//            Map.Entry<Integer, Long> entry = scan.next();
-////            map.put(entry.getKey(), entry.getValue());
-//            System.out.println(entry.getKey() +"::" +entry.getValue() );
-
+    public void syncArticleDataRedisToMysqlRead(){
+        Cursor<Map.Entry<Integer,Long>> cursor = redisTemplate.opsForHash().scan("read::article", ScanOptions.NONE);
+        HashMap<Integer, Long> map = new HashMap<>();
+        while(cursor.hasNext()){
+            Map.Entry<Integer, Long> entry = cursor.next();
+            map.put(entry.getKey(), entry.getValue());
+        }
+        if(!CollectionUtils.isEmpty(map)){
+            articleMapper.updateByPrimaryKeyForeachRead(map);
+        }
+        try {
+            cursor.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
     @Test
-    public void testRedisNone(){
-        //redisTemplate.delete("read::article");
-        HashMap<Integer, Long> map = new HashMap<>();
-        map.put(9,966L);
-        map.put(2,462L);
-        map.put(3,583L);
-        map.put(11,644L);
-        map.put(12,6536L);
-        map.put(13,2060L);
-        map.put(14,64L);
-        map.put(15,235L);
-        map.put(16,875L);
-        map.put(10,324L);
-        redisTemplate.opsForHash().putAll("read::article",map);
+    public void syncArticleDataRedisToMysqlLike(){
+        //get 修改过的artid 数量
+        Long size = redisTemplate.opsForSet().size("change::article");
+        List<Integer> pop = redisTemplate.opsForSet().pop("change::article", size);
+        redisTemplate.delete("change::article");
+        HashMap<Integer, Long> recordMap = new HashMap<>();
+        //foreach 今日修改过的article.artId
+        for(int artId: pop){
+            //得到现在点赞的人数
+            Long artLike = redisTemplate.opsForSet().size("likeUser:article:" + artId);
+            recordMap.put(artId,artLike);
+        }
+        //update foreach mysql
+        if(!CollectionUtils.isEmpty(recordMap)){
+            articleMapper.updateByPrimaryKeyForeachLike(recordMap);
+        }
     }
 }

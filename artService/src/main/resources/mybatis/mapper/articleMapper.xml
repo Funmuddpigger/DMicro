@@ -176,7 +176,7 @@
       <if test="value!=null">
         art_read = #{value}
       </if>
-      where art_id = #{key}
+      where art_id = #{key,jdbcType=INTEGER}
     </foreach>
   </update>
 
