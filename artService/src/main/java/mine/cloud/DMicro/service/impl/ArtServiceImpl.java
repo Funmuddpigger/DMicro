@@ -1,9 +1,8 @@
 package mine.cloud.DMicro.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import mine.cloud.DMicro.dao.ArticleMapper;
+import mine.cloud.DMicro.dao.VideoMapper;
 import mine.cloud.DMicro.doc.ArticleDoc;
 import mine.cloud.DMicro.doc.HotwordDoc;
 import mine.cloud.DMicro.feignClients.ComClient;
@@ -15,6 +14,7 @@ import mine.cloud.DMicro.params.RequestParamsRedisArtUsr;
 import mine.cloud.DMicro.pojo.Article;
 import mine.cloud.DMicro.pojo.Comment;
 import mine.cloud.DMicro.pojo.User;
+import mine.cloud.DMicro.pojo.Video;
 import mine.cloud.DMicro.service.IArtServiceApi;
 import mine.cloud.DMicro.utils.*;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -64,6 +64,9 @@ public class ArtServiceImpl implements IArtServiceApi  {
     //注入mapper
     @Autowired
     private ArticleMapper articleMapper;
+
+    @Autowired
+    private VideoMapper videoMapper;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -464,6 +467,54 @@ public class ArtServiceImpl implements IArtServiceApi  {
         ResultList res = imageUploadUtils.upLoadFileOrImages(file, request);
         return res;
     }
+
+    @Override
+    public ResultList saveVideoUrl(Video params) {
+        ResultList res = new ResultList();
+        res.setCode(HttpStatusCode.HTTP_OK);
+        params.setVideoPostime(new Date());
+        int succeed = videoMapper.insertSelective(params);
+        if(succeed == 0){
+            res.setMsg("fail");
+            return res;
+        }
+        res.setMsg("ok");
+        return res;
+    }
+
+    @Override
+    public ResultList delVideoById(Integer id) {
+        ResultList res = new ResultList();
+        res.setCode(HttpStatusCode.HTTP_OK);
+        videoMapper.deleteByPrimaryKey(id);
+        res.setMsg("ok");
+        return res;
+    }
+
+    @Override
+    public ResultList tapToReadVideo(Integer id) {
+        ResultList res = new ResultList();
+        res.setCode(HttpStatusCode.HTTP_OK);
+        res.setMsg("ok");
+        Video video = new Video();
+        video.setVideoId(id);
+        video.setVideoPlay(1L);
+        videoMapper.updateByPrimaryKeySelective(video);
+        return res;
+    }
+
+    @Override
+    public ResultList tapToLikeVideo(Integer id) {
+        ResultList res = new ResultList();
+        res.setCode(HttpStatusCode.HTTP_OK);
+        res.setMsg("ok");
+        Video video = new Video();
+        video.setVideoId(id);
+        video.setVideoLike(1L);
+        videoMapper.updateByPrimaryKeySelective(video);
+        return res;
+    }
+
 
     /**
      * 文章删除

@@ -4,6 +4,7 @@ import mine.cloud.DMicro.params.RequestParams;
 import mine.cloud.DMicro.params.RequestParamsESArt;
 import mine.cloud.DMicro.params.RequestParamsRedisArtUsr;
 import mine.cloud.DMicro.pojo.Article;
+import mine.cloud.DMicro.pojo.Video;
 import mine.cloud.DMicro.utils.Result;
 import mine.cloud.DMicro.utils.ResultList;
 import org.springframework.web.multipart.MultipartFile;
@@ -56,4 +57,12 @@ public interface IArtServiceApi {
     ResultList tapArticleRead(RequestParamsRedisArtUsr params);
 
     ResultList upLoadImageOrFile(MultipartFile file, HttpServletRequest request);
+
+    ResultList saveVideoUrl(Video params);
+
+    ResultList delVideoById(Integer id);
+
+    ResultList tapToReadVideo(Integer id);
+
+    ResultList tapToLikeVideo(Integer id);
 }

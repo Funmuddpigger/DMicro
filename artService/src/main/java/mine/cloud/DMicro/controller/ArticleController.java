@@ -5,6 +5,7 @@ import mine.cloud.DMicro.params.RequestParams;
 import mine.cloud.DMicro.params.RequestParamsESArt;
 import mine.cloud.DMicro.params.RequestParamsRedisArtUsr;
 import mine.cloud.DMicro.pojo.Article;
+import mine.cloud.DMicro.pojo.Video;
 import mine.cloud.DMicro.service.IArtServiceApi;
 import mine.cloud.DMicro.utils.ResultList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,8 +103,33 @@ public class ArticleController {
         return iArtServiceApi.deleteArticle(artId);
     }
 
+    //article模块上传回显url(image/video)
     @RequestMapping("/upload")
     public ResultList uploadImg(@RequestParam("image") MultipartFile file, HttpServletRequest request)  {
         return iArtServiceApi.upLoadImageOrFile(file, request);//这里调用service的upfile方法，传入两个参数。
+    }
+
+    //art-video save
+    @RequestMapping("/video-insert")
+    public ResultList saveVideoUrl(@RequestBody Video params)  {
+        return iArtServiceApi.saveVideoUrl(params);
+    }
+
+    //art-video del
+    @RequestMapping("/video-insert")
+    public ResultList delVideoUrl(@RequestBody Integer id)  {
+        return iArtServiceApi.delVideoById(id);
+    }
+
+    //art-video read
+    @RequestMapping("/video-insert")
+    public ResultList tapToRead(@RequestBody Integer id)  {
+        return iArtServiceApi.tapToReadVideo(id);
+    }
+
+    //art-video like
+    @RequestMapping("/video-insert")
+    public ResultList tapToLike(@RequestBody Integer id)  {
+        return iArtServiceApi.tapToLikeVideo(id);
     }
 }
