@@ -469,10 +469,14 @@ public class ArtServiceImpl implements IArtServiceApi  {
     }
 
     @Override
-    public ResultList saveVideoUrl(Video params) {
+    public ResultList saveVideoUrl(String token,Video params) {
         ResultList res = new ResultList();
+        User user = handleTokenAuthRes(token);
         res.setCode(HttpStatusCode.HTTP_OK);
+        params.setUsrId(user.getUsrId());
         params.setVideoPostime(new Date());
+        params.setVideoLike(0L);
+        params.setVideoPlay(0L);
         int succeed = videoMapper.insertSelective(params);
         if(succeed == 0){
             res.setMsg("fail");
@@ -512,6 +516,16 @@ public class ArtServiceImpl implements IArtServiceApi  {
         video.setVideoId(id);
         video.setVideoLike(1L);
         videoMapper.updateByPrimaryKeySelective(video);
+        return res;
+    }
+
+    @Override
+    public ResultList selectVideoBySelective(Video record) {
+        ResultList res = new ResultList();
+        res.setMsg("ok");
+        res.setCode(HttpStatusCode.HTTP_OK);
+        List<Video> videos = videoMapper.selectBySelective(record);
+        res.setData(videos);
         return res;
     }
 

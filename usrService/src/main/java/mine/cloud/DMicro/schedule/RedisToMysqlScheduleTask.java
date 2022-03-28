@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -27,11 +28,13 @@ public class RedisToMysqlScheduleTask {
     public void syncUsrDataRedisToMysqlFans(){
         Long size = redisTemplate.opsForSet().size("change::user");
         List<Integer> followers = redisTemplate.opsForSet().pop("change::user", size);
-        HashMap<Integer, Long> map = new HashMap<>();
+        HashMap<Integer, Long> recordMap = new HashMap<>();
         for (Integer usrId : followers){
             Long fans = redisTemplate.opsForSet().size("usr:fans:" + usrId);
-            map.put(usrId,fans);
+            recordMap.put(usrId,fans);
         }
-        userMapper.updateByPrimaryKeyFansForeach(map);
+        if(!CollectionUtils.isEmpty(recordMap)){
+            userMapper.updateByPrimaryKeyFansForeach(recordMap);
+        }
     }
 }

@@ -54,6 +54,10 @@ spring:
         max-idle: 16
         min-idle: 0
       timeout: 3000
+  servlet:
+    multipart:
+      max-request-size: 200MB
+      max-file-size: 200MB
 
 server:
   port: 7070
@@ -75,7 +79,6 @@ feign:
       default:
         connectTimeout: 300000
         readTimeout: 300000
-
 # 设置ribbon超时时间
 ribbon:
   ReadTimeout: 20000

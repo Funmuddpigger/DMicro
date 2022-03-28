@@ -58,11 +58,13 @@ public interface IArtServiceApi {
 
     ResultList upLoadImageOrFile(MultipartFile file, HttpServletRequest request);
 
-    ResultList saveVideoUrl(Video params);
+    ResultList saveVideoUrl(String token,Video params);
 
     ResultList delVideoById(Integer id);
 
     ResultList tapToReadVideo(Integer id);
 
     ResultList tapToLikeVideo(Integer id);
+
+    ResultList selectVideoBySelective(Video record);
 }

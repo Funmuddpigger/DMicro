@@ -111,25 +111,31 @@ public class ArticleController {
 
     //art-video save
     @RequestMapping("/video-insert")
-    public ResultList saveVideoUrl(@RequestBody Video params)  {
-        return iArtServiceApi.saveVideoUrl(params);
+    public ResultList saveVideoUrl(@RequestHeader("token") String token ,@RequestBody Video params)  {
+        return iArtServiceApi.saveVideoUrl(token,params);
     }
 
     //art-video del
-    @RequestMapping("/video-insert")
+    @RequestMapping("/video-del")
     public ResultList delVideoUrl(@RequestBody Integer id)  {
         return iArtServiceApi.delVideoById(id);
     }
 
     //art-video read
-    @RequestMapping("/video-insert")
+    @RequestMapping("/video-read")
     public ResultList tapToRead(@RequestBody Integer id)  {
         return iArtServiceApi.tapToReadVideo(id);
     }
 
     //art-video like
-    @RequestMapping("/video-insert")
+    @RequestMapping("/video-like")
     public ResultList tapToLike(@RequestBody Integer id)  {
         return iArtServiceApi.tapToLikeVideo(id);
+    }
+
+    //art-select
+    @RequestMapping("video-select")
+    public ResultList selectVideoBySelective(@RequestBody(required = false) Video record){
+        return iArtServiceApi.selectVideoBySelective(record);
     }
 }

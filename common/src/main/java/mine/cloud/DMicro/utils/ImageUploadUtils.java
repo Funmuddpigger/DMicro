@@ -17,8 +17,8 @@ public class ImageUploadUtils {
      * 图片保存路径，自动从yml文件中获取数据
      *   示例： E:/images/
      */
-//    private static final String filePath = "F:/images/" ;
-    private static final String filePath = "/data/images/" ;
+    private static final String filePath = "F:/images/" ;
+    //private static final String filePath = "/data/images/" ;
 
     public ResultList upLoadFileOrImages(MultipartFile file, HttpServletRequest request){
         ResultList res = new ResultList();

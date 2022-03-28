@@ -1,7 +1,14 @@
 package mine.cloud.DMicro.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.util.Date;
 
+@Data
+@EqualsAndHashCode(callSuper = false)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Video {
     private Integer videoId;
 
@@ -15,49 +22,13 @@ public class Video {
 
     private String videoUrl;
 
-    public Integer getVideoId() {
-        return videoId;
-    }
+    private String videoType;
 
-    public void setVideoId(Integer videoId) {
-        this.videoId = videoId;
-    }
+    private String videoType2;
 
-    public Integer getUsrId() {
-        return usrId;
-    }
+    private String videoTitle;
 
-    public void setUsrId(Integer usrId) {
-        this.usrId = usrId;
-    }
-
-    public Long getVideoPlay() {
-        return videoPlay;
-    }
-
-    public void setVideoPlay(Long videoPlay) {
-        this.videoPlay = videoPlay;
-    }
-
-    public Date getVideoPostime() {
-        return videoPostime;
-    }
-
-    public void setVideoPostime(Date videoPostime) {
-        this.videoPostime = videoPostime;
-    }
-
-    public Long getVideoLike() {
-        return videoLike;
-    }
-
-    public void setVideoLike(Long videoLike) {
-        this.videoLike = videoLike;
-    }
-
-    public String getVideoUrl() {
-        return videoUrl;
-    }
+    private String videoImg;
 
     public void setVideoUrl(String videoUrl) {
         this.videoUrl = videoUrl == null ? null : videoUrl.trim();

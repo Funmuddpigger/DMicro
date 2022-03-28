@@ -8,9 +8,13 @@
     <result column="video_postime" jdbcType="TIMESTAMP" property="videoPostime" />
     <result column="video_like" jdbcType="BIGINT" property="videoLike" />
     <result column="video_url" jdbcType="VARCHAR" property="videoUrl" />
+    <result column="video_type" jdbcType="VARCHAR" property="videoType" />
+    <result column="video_type2" jdbcType="VARCHAR" property="videoType2" />
+    <result column="video_title" jdbcType="VARCHAR" property="videoTitle" />
+    <result column="video_img" jdbcType="VARCHAR" property="videoImg" />
   </resultMap>
   <sql id="Base_Column_List">
-    video_id, usr_id, video_play, video_postime, video_like, video_url
+    video_id, usr_id, video_play, video_postime, video_like, video_url,video_type,video_type2,video_title,video_img
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -18,18 +22,34 @@
     from video_table
     where video_id = #{videoId,jdbcType=INTEGER}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from video_table
-    where video_id = #{videoId,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" parameterType="mine.cloud.DMicro.pojo.Video">
-    insert into video_table (video_id, usr_id, video_play, 
-      video_postime, video_like, video_url
-      )
-    values (#{videoId,jdbcType=INTEGER}, #{usrId,jdbcType=INTEGER}, #{videoPlay,jdbcType=BIGINT}, 
-      #{videoPostime,jdbcType=TIMESTAMP}, #{videoLike,jdbcType=BIGINT}, #{videoUrl,jdbcType=VARCHAR}
-      )
-  </insert>
+  <select id="selectBySelective" parameterType="mine.cloud.DMicro.pojo.Video" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from video_table
+    where 1=1
+    <if test="videoId != null">
+      AND video_id = #{videoId,jdbcType=INTEGER}
+    </if>
+    <if test="usrId != null">
+      AND usr_id = #{usrId,jdbcType=INTEGER}
+    </if>
+    <if test="videoUrl != null">
+      AND video_url = #{videoUrl,jdbcType=VARCHAR}
+    </if>
+    <if test="videoType != null and videoType != '' ">
+      AND video_type = #{videoType,jdbcType=VARCHAR}
+    </if>
+    <if test="videoType2 != null and videoType2 != '' ">
+      AND video_type2 = #{videoType2,jdbcType=VARCHAR}
+    </if>
+    <if test="videoTitle != null and videoTitle != ''">
+     AND video_title = #{videoTitle,jdbcType=VARCHAR}
+    </if>
+    <if test="videoImg != null">
+      AND video_img = #{videoImg,jdbcType=VARCHAR}
+    </if>
+    order by video_postime desc , video_like desc , video_play desc
+  </select>
   <insert id="insertSelective" parameterType="mine.cloud.DMicro.pojo.Video">
     insert into video_table
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -51,6 +71,18 @@
       <if test="videoUrl != null">
         video_url,
       </if>
+      <if test="videoType != null">
+        video_type,
+      </if>
+      <if test="videoType2 != null">
+        video_type2,
+      </if>
+      <if test="videoTitle != null">
+        video_title,
+      </if>
+      <if test="videoImg != null">
+        video_img,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="videoId != null">
@@ -70,6 +102,18 @@
       </if>
       <if test="videoUrl != null">
         #{videoUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="videoType != null">
+        #{videoType,jdbcType=VARCHAR},
+      </if>
+      <if test="videoType2 != null">
+        #{videoType2,jdbcType=VARCHAR},
+      </if>
+      <if test="videoTitle != null">
+        #{videoTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="videoImg != null">
+        #{videoImg,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -91,16 +135,13 @@
       <if test="videoUrl != null">
         video_url =  #{videoUrl,jdbcType=VARCHAR},
       </if>
+      <if test="videoType != null">
+        video_type =  #{videoType,jdbcType=VARCHAR},
+      </if>
+      <if test="videoType2 != null">
+        video_type2 =  #{videoType2,jdbcType=VARCHAR},
+      </if>
     </set>
-    where video_id = #{videoId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="mine.cloud.DMicro.pojo.Video">
-    update video_table
-    set usr_id = #{usrId,jdbcType=INTEGER},
-      video_play = #{videoPlay,jdbcType=BIGINT},
-      video_postime = #{videoPostime,jdbcType=TIMESTAMP},
-      video_like = #{videoLike,jdbcType=BIGINT},
-      video_url = #{videoUrl,jdbcType=VARCHAR}
     where video_id = #{videoId,jdbcType=INTEGER}
   </update>
 </mapper>

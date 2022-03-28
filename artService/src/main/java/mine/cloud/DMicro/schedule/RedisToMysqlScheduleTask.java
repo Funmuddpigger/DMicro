@@ -18,6 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -46,12 +47,16 @@ public class RedisToMysqlScheduleTask {
     @Scheduled(cron = "0 0 20 * * ? ")
     public void syncArticleDataRedisToMysqlRead(){
         Cursor<Map.Entry<Integer,Long>> cursor = redisTemplate.opsForHash().scan("read::article", ScanOptions.NONE);
-        HashMap<Integer, Long> map = new HashMap<>();
+        HashMap<Integer, Long> recordMap = new HashMap<>();
         while(cursor.hasNext()){
             Map.Entry<Integer, Long> entry = cursor.next();
-            map.put(entry.getKey(), entry.getValue());
+            recordMap.put(entry.getKey(), entry.getValue());
         }
-        articleMapper.updateByPrimaryKeyForeachRead(map);
+
+        if(!CollectionUtils.isEmpty(recordMap)){
+            articleMapper.updateByPrimaryKeyForeachRead(recordMap);
+        }
+
         try {
             cursor.close();
         } catch (IOException e) {
@@ -78,7 +83,9 @@ public class RedisToMysqlScheduleTask {
             recordMap.put(artId,artLike);
         }
         //update foreach mysql
-        articleMapper.updateByPrimaryKeyForeachLike(recordMap);
+        if(!CollectionUtils.isEmpty(recordMap)){
+            articleMapper.updateByPrimaryKeyForeachLike(recordMap);
+        }
     }
 
 
@@ -116,7 +123,5 @@ public class RedisToMysqlScheduleTask {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-
     }
 }
