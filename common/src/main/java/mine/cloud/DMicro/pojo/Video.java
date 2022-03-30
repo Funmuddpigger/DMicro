@@ -1,8 +1,11 @@
 package mine.cloud.DMicro.pojo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.util.Date;
 
@@ -16,6 +19,8 @@ public class Video {
 
     private Long videoPlay;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
+    @Field(type = FieldType.Date)
     private Date videoPostime;
 
     private Long videoLike;
