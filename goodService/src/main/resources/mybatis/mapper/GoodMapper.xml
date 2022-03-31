@@ -19,7 +19,7 @@
     from good_table
     where good_id = #{goodId,jdbcType=INTEGER}
   </select>
-  <select id="selectByPrimaryKeySelective" parameterType="mine.cloud.DMicro.pojo.Good" resultMap="BaseResultMap">
+  <select id="selectBySelective" parameterType="mine.cloud.DMicro.pojo.Good" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from good_table
@@ -100,4 +100,11 @@
     </set>
     where good_id = #{goodId,jdbcType=INTEGER}
   </update>
+  <delete id="deleteBatchByIds" parameterType="java.util.List">
+    delete from good_table
+    where good_id in
+    <foreach collection="goodIdList" item="item" open="(" separator="," close=")">
+        #{item}
+    </foreach>
+  </delete>
 </mapper>

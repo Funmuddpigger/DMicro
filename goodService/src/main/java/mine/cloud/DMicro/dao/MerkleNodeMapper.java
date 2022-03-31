@@ -1,6 +1,9 @@
 package mine.cloud.DMicro.dao;
 
+import mine.cloud.DMicro.pojo.Blockchain;
 import mine.cloud.DMicro.pojo.MerkleNode;
+
+import java.util.List;
 
 public interface MerkleNodeMapper {
     int deleteByPrimaryKey(Integer merkleNodeId);
@@ -10,4 +13,6 @@ public interface MerkleNodeMapper {
     MerkleNode selectByPrimaryKey(Integer merkleNodeId);
 
     int updateByPrimaryKeySelective(MerkleNode record);
+
+    List<MerkleNode> selectMerkleTree(MerkleNode merkleNode);
 }

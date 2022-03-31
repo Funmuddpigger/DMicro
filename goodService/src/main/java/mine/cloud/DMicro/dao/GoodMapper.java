@@ -13,5 +13,7 @@ public interface GoodMapper {
 
     int updateByPrimaryKeySelective(Good record);
 
-    List<Good> selectByPrimaryKeySelective(Good record);
+    List<Good> selectBySelective(Good record);
+
+    int deleteBatchByIds(List<Integer> goodIdList);
 }

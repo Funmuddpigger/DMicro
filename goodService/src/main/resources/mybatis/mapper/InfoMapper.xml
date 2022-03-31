@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mine.cloud.DMicro.dao.InfoMapper">
+  <resultMap id="BaseResultMap" type="mine.cloud.DMicro.pojo.Info">
+    <id column="info_id" jdbcType="INTEGER" property="infoId" />
+    <result column="info_msg" jdbcType="VARCHAR" property="infoMsg" />
+    <result column="good_id" jdbcType="INTEGER" property="goodId" />
+    <result column="usr_id" jdbcType="INTEGER" property="usrId" />
+    <result column="info_time" jdbcType="TIMESTAMP" property="infoTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    info_id, info_msg, good_id, usr_id, info_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from info_table
+    where info_id = #{infoId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from info_table
+    where info_id = #{infoId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="mine.cloud.DMicro.pojo.Info">
+    insert into info_table (info_id, info_msg, good_id, 
+      usr_id, info_time)
+    values (#{infoId,jdbcType=INTEGER}, #{infoMsg,jdbcType=VARCHAR}, #{goodId,jdbcType=INTEGER}, 
+      #{usrId,jdbcType=INTEGER}, #{infoTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="mine.cloud.DMicro.pojo.Info">
+    insert into info_table
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="infoId != null">
+        info_id,
+      </if>
+      <if test="infoMsg != null">
+        info_msg,
+      </if>
+      <if test="goodId != null">
+        good_id,
+      </if>
+      <if test="usrId != null">
+        usr_id,
+      </if>
+      <if test="infoTime != null">
+        info_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="infoId != null">
+        #{infoId,jdbcType=INTEGER},
+      </if>
+      <if test="infoMsg != null">
+        #{infoMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="goodId != null">
+        #{goodId,jdbcType=INTEGER},
+      </if>
+      <if test="usrId != null">
+        #{usrId,jdbcType=INTEGER},
+      </if>
+      <if test="infoTime != null">
+        #{infoTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="mine.cloud.DMicro.pojo.Info">
+    update info_table
+    <set>
+      <if test="infoMsg != null">
+        info_msg = #{infoMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="goodId != null">
+        good_id = #{goodId,jdbcType=INTEGER},
+      </if>
+      <if test="usrId != null">
+        usr_id = #{usrId,jdbcType=INTEGER},
+      </if>
+      <if test="infoTime != null">
+        info_time = #{infoTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where info_id = #{infoId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="mine.cloud.DMicro.pojo.Info">
+    update info_table
+    set info_msg = #{infoMsg,jdbcType=VARCHAR},
+      good_id = #{goodId,jdbcType=INTEGER},
+      usr_id = #{usrId,jdbcType=INTEGER},
+      info_time = #{infoTime,jdbcType=TIMESTAMP}
+    where info_id = #{infoId,jdbcType=INTEGER}
+  </update>
+</mapper>

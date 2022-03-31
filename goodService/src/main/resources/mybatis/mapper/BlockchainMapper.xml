@@ -22,6 +22,33 @@
     delete from blockchain
     where block_id = #{blockId,jdbcType=INTEGER}
   </delete>
+
+  <select id="selectBlockChainBlock">
+    select
+    <include refid="Base_Column_List" />
+    from blockchain
+    where
+    1=1
+    <if test="blockId != null">
+     AND block_id = #{blockId,jdbcType=INTEGER}
+    </if>
+    <if test="blockPrev != null">
+     AND block_prev = #{blockPrev,jdbcType=VARCHAR}
+    </if>
+    <if test="blockData != null">
+     AND block_data = #{blockData,jdbcType=VARCHAR}
+    </if>
+    <if test="blockTimestamp != null">
+     AND block_timestamp = #{blockTimestamp,jdbcType=TIMESTAMP}
+    </if>
+    <if test="blockHash != null">
+     AND block_hash = #{blockHash,jdbcType=VARCHAR}
+    </if>
+    <if test="blockMerkle != null">
+     AND block_merkle = #{blockMerkle,jdbcType=VARCHAR}
+    </if>
+  </select>
+
   <insert id="insertSelective" parameterType="mine.cloud.DMicro.pojo.Blockchain">
     insert into blockchain
     <trim prefix="(" suffix=")" suffixOverrides=",">
