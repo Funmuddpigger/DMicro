@@ -2,10 +2,10 @@ package mine.cloud.DMicro.dao;
 
 import mine.cloud.DMicro.pojo.Good;
 
-public interface goodMapper {
-    int deleteByPrimaryKey(Integer goodId);
+import java.util.List;
 
-    int insert(Good record);
+public interface GoodMapper {
+    int deleteByPrimaryKey(Integer goodId);
 
     int insertSelective(Good record);
 
@@ -13,5 +13,5 @@ public interface goodMapper {
 
     int updateByPrimaryKeySelective(Good record);
 
-    int updateByPrimaryKey(Good record);
+    List<Good> selectByPrimaryKeySelective(Good record);
 }

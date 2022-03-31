@@ -1,16 +1,12 @@
 package mine.cloud.DMicro.blockChain;
 
-import com.sun.org.apache.xerces.internal.dom.ParentNode;
-import mine.cloud.DMicro.pojo.MerKleNode;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.sun.xml.internal.fastinfoset.util.ValueArray.MAXIMUM_CAPACITY;
-
 public class MerKleTreeUtils {
+
+    static final int MAXIMUM_CAPACITY = 1 << 30;
 
     public static List<MerKleNode> buildInitMerKleHashNode(List<Map<String,String>> list){
         ArrayList<MerKleNode> res = new ArrayList<>();

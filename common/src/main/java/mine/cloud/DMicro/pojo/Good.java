@@ -18,6 +18,10 @@ public class Good {
 
     private String goodText;
 
+    private String goodImg;
+
+    private Integer userId;
+
     public void setGoodName(String goodName) {
         this.goodName = goodName == null ? null : goodName.trim();
     }

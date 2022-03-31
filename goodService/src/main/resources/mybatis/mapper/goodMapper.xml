@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="mine.cloud.DMicro.dao.goodMapper">
+<mapper namespace="mine.cloud.DMicro.dao.GoodMapper">
   <resultMap id="BaseResultMap" type="mine.cloud.DMicro.pojo.Good">
     <id column="good_id" jdbcType="INTEGER" property="goodId" />
     <result column="good_name" jdbcType="VARCHAR" property="goodName" />
     <result column="good_price" jdbcType="DECIMAL" property="goodPrice" />
     <result column="good_args" jdbcType="VARCHAR" property="goodArgs" />
     <result column="good_text" jdbcType="VARCHAR" property="goodText" />
+    <result column="good_img" jdbcType="VARCHAR" property="goodImg" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
   </resultMap>
   <sql id="Base_Column_List">
     good_id, good_name, good_price, good_args, good_text
@@ -17,16 +19,32 @@
     from good_table
     where good_id = #{goodId,jdbcType=INTEGER}
   </select>
+  <select id="selectByPrimaryKeySelective" parameterType="mine.cloud.DMicro.pojo.Good" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from good_table
+    where
+    1=1
+    <if test="goodId != null">
+        AND good_id = #{goodId,jdbcType=INTEGER}
+    </if>
+    <if test="goodName != null">
+        AND good_name =  #{goodName,jdbcType=VARCHAR}
+    </if>
+    <if test="goodPrice != null">
+        AND good_price =  #{goodPrice,jdbcType=DECIMAL}
+    </if>
+    <if test="goodArgs != null">
+        AND good_args = #{goodArgs,jdbcType=VARCHAR}
+    </if>
+    <if test="goodText != null">
+        AND good_text #{goodText,jdbcType=VARCHAR}
+    </if>
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from good_table
     where good_id = #{goodId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="mine.cloud.DMicro.pojo.Good">
-    insert into good_table (good_id, good_name, good_price, 
-      good_args, good_text)
-    values (#{goodId,jdbcType=INTEGER}, #{goodName,jdbcType=VARCHAR}, #{goodPrice,jdbcType=DECIMAL}, 
-      #{goodArgs,jdbcType=VARCHAR}, #{goodText,jdbcType=VARCHAR})
-  </insert>
   <insert id="insertSelective" parameterType="mine.cloud.DMicro.pojo.Good">
     insert into good_table
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -80,14 +98,6 @@
         good_text = #{goodText,jdbcType=VARCHAR},
       </if>
     </set>
-    where good_id = #{goodId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="mine.cloud.DMicro.pojo.Good">
-    update good_table
-    set good_name = #{goodName,jdbcType=VARCHAR},
-      good_price = #{goodPrice,jdbcType=DECIMAL},
-      good_args = #{goodArgs,jdbcType=VARCHAR},
-      good_text = #{goodText,jdbcType=VARCHAR}
     where good_id = #{goodId,jdbcType=INTEGER}
   </update>
 </mapper>

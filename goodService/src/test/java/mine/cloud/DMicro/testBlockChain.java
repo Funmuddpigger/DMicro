@@ -1,7 +1,7 @@
 package mine.cloud.DMicro;
 
 import mine.cloud.DMicro.blockChain.MerKleTreeUtils;
-import mine.cloud.DMicro.pojo.MerKleNode;
+import mine.cloud.DMicro.blockChain.MerKleNode;
 import org.springframework.boot.test.context.SpringBootTest;
 import java.util.ArrayList;
 import java.util.HashMap;

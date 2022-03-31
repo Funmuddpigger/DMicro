@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mine.cloud.DMicro.dao.BlockchainMapper">
+  <resultMap id="BaseResultMap" type="mine.cloud.DMicro.pojo.Blockchain">
+    <id column="block_id" jdbcType="INTEGER" property="blockId" />
+    <result column="block_prev" jdbcType="VARCHAR" property="blockPrev" />
+    <result column="block_data" jdbcType="VARCHAR" property="blockData" />
+    <result column="block_timestamp" jdbcType="TIMESTAMP" property="blockTimestamp" />
+    <result column="block_hash" jdbcType="VARCHAR" property="blockHash" />
+    <result column="block_merkle" jdbcType="VARCHAR" property="blockMerkle" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    block_id, block_prev, block_data, block_timestamp, block_hash, block_merkle
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from blockchain
+    where block_id = #{blockId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from blockchain
+    where block_id = #{blockId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertSelective" parameterType="mine.cloud.DMicro.pojo.Blockchain">
+    insert into blockchain
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="blockId != null">
+        block_id,
+      </if>
+      <if test="blockPrev != null">
+        block_prev,
+      </if>
+      <if test="blockData != null">
+        block_data,
+      </if>
+      <if test="blockTimestamp != null">
+        block_timestamp,
+      </if>
+      <if test="blockHash != null">
+        block_hash,
+      </if>
+      <if test="blockMerkle != null">
+        block_merkle,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="blockId != null">
+        #{blockId,jdbcType=INTEGER},
+      </if>
+      <if test="blockPrev != null">
+        #{blockPrev,jdbcType=VARCHAR},
+      </if>
+      <if test="blockData != null">
+        #{blockData,jdbcType=VARCHAR},
+      </if>
+      <if test="blockTimestamp != null">
+        #{blockTimestamp,jdbcType=TIMESTAMP},
+      </if>
+      <if test="blockHash != null">
+        #{blockHash,jdbcType=VARCHAR},
+      </if>
+      <if test="blockMerkle != null">
+        #{blockMerkle,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="mine.cloud.DMicro.pojo.Blockchain">
+    update blockchain
+    <set>
+      <if test="blockPrev != null">
+        block_prev = #{blockPrev,jdbcType=VARCHAR},
+      </if>
+      <if test="blockData != null">
+        block_data = #{blockData,jdbcType=VARCHAR},
+      </if>
+      <if test="blockTimestamp != null">
+        block_timestamp = #{blockTimestamp,jdbcType=TIMESTAMP},
+      </if>
+      <if test="blockHash != null">
+        block_hash = #{blockHash,jdbcType=VARCHAR},
+      </if>
+      <if test="blockMerkle != null">
+        block_merkle = #{blockMerkle,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where block_id = #{blockId,jdbcType=INTEGER}
+  </update>
+</mapper>
