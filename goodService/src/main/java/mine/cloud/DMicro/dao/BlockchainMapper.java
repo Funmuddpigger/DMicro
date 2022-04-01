@@ -13,5 +13,9 @@ public interface BlockchainMapper {
 
     int updateByPrimaryKeySelective(Blockchain record);
 
-    List<Blockchain> selectBlockChainBlock(Blockchain record);
+    Blockchain selectBlockChainBlock(Blockchain record);
+
+    List<Blockchain> selectLastOne(String type);
+
+    List<Blockchain> selectBlockChainByParents(Blockchain block);
 }

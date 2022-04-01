@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import mine.cloud.DMicro.blockChain.MerKleTreeNode;
 
 @Data
 @AllArgsConstructor
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class MerkleNode {
     private Integer merkleNodeId;
 
-    private String merkleNodeIndex;
+    private Integer merkleNodeIndex;
 
     private String blockIndex;
 
@@ -21,4 +22,10 @@ public class MerkleNode {
     private String hash;
 
     private String merkleData;
+
+    public MerkleNode(MerKleTreeNode node){
+        this.isLeafNode = node.getIsLeaf();
+        this.hash = node.getData();
+
+    }
 }

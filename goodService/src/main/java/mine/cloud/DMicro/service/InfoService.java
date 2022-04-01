@@ -8,5 +8,5 @@ import java.util.List;
 public interface InfoService {
     ResultList queryInfos(Info record);
 
-    ResultList addDetailsInfos(List<Info> records);
+    ResultList addDetailsInfos(List<Info> records,String type);
 }

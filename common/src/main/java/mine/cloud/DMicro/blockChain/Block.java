@@ -19,6 +19,7 @@ public class Block {
         this.previousHash = previousHash;
         this.data = data;
         data.put("prevBlock",previousHash);
+        data.put("MerkleRoot",merkleRoot);
         this.timeStamp = timeStamp;
         this.blockHash = BlockHashAlgoUtils.encodeDataBySHA_256(data);
         this.MerkleRoot = merkleRoot;

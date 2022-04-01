@@ -24,13 +24,18 @@ public class Blockchain {
 
     private String blockHash;
 
+    private String blockType;
+
     private String blockMerkle;
 
-    public Blockchain(Block block){
+    private Blockchain children;
+
+    public Blockchain(Block block,String type){
         this.blockPrev = block.getPreviousHash();
         this.blockHash = block.getBlockHash();
         this.blockMerkle = block.getMerkleRoot();
         this.blockTimestamp = new Date().getTime();
+        this.blockType = type;
     }
 
 }

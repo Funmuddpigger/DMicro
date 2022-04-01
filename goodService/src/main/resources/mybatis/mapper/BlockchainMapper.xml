@@ -8,9 +8,23 @@
     <result column="block_timestamp" jdbcType="TIMESTAMP" property="blockTimestamp" />
     <result column="block_hash" jdbcType="VARCHAR" property="blockHash" />
     <result column="block_merkle" jdbcType="VARCHAR" property="blockMerkle" />
+    <result column="block_type" jdbcType="VARCHAR" property="blockType" />
+  </resultMap>
+
+  <resultMap id="BaseResultMapCollection" type="mine.cloud.DMicro.pojo.Blockchain">
+    <id column="block_id" jdbcType="INTEGER" property="blockId" />
+    <result column="block_prev" jdbcType="VARCHAR" property="blockPrev" />
+    <result column="block_data" jdbcType="VARCHAR" property="blockData" />
+    <result column="block_timestamp" jdbcType="TIMESTAMP" property="blockTimestamp" />
+    <result column="block_hash" jdbcType="VARCHAR" property="blockHash" />
+    <result column="block_merkle" jdbcType="VARCHAR" property="blockMerkle" />
+    <result column="block_type" jdbcType="VARCHAR" property="blockType" />
+    <association property="children" column="" resultMap="BaseResultMapCollection">
+
+    </association>
   </resultMap>
   <sql id="Base_Column_List">
-    block_id, block_prev, block_data, block_timestamp, block_hash, block_merkle
+    block_id, block_prev, block_data, block_timestamp, block_hash, block_merkle,block_type
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -47,6 +61,9 @@
     <if test="blockMerkle != null">
      AND block_merkle = #{blockMerkle,jdbcType=VARCHAR}
     </if>
+    <if test="blockType != null">
+      AND block_type = #{blockType}
+    </if>
   </select>
 
   <insert id="insertSelective" parameterType="mine.cloud.DMicro.pojo.Blockchain">
@@ -70,6 +87,9 @@
       <if test="blockMerkle != null">
         block_merkle,
       </if>
+      <if test="blockType != null">
+        block_type,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="blockId != null">
@@ -89,6 +109,9 @@
       </if>
       <if test="blockMerkle != null">
         #{blockMerkle,jdbcType=VARCHAR},
+      </if>
+      <if test="blockType != null">
+        #{blockType,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -110,7 +133,20 @@
       <if test="blockMerkle != null">
         block_merkle = #{blockMerkle,jdbcType=VARCHAR},
       </if>
+      <if test="blockType != null">
+        block_type = #{blockType,jdbcType=VARCHAR},
+      </if>
     </set>
     where block_id = #{blockId,jdbcType=INTEGER}
   </update>
+
+  <!-- select last by type -->
+  <select id="selectLastOne" parameterType="java.lang.String">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM blockchain
+    WHERE block_type = #{blockType ,jdbcType=VARCHAR}
+    ORDER BY block_id DESC
+  </select>
+
 </mapper>
