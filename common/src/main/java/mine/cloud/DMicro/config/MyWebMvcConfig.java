@@ -7,8 +7,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class MyWebMvcConfig implements WebMvcConfigurer {
 
-    private String filePath = "F:/images/" ;
-//    private static final String filePath = "/data/images/" ;
+//    private String filePath = "F:/images/" ;
+    private static final String filePath = "/data/images/" ;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
