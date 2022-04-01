@@ -23,9 +23,11 @@ public class MerkleNode {
 
     private String merkleData;
 
+    private Integer infoId;
+
     public MerkleNode(MerKleTreeNode node){
         this.isLeafNode = node.getIsLeaf();
         this.hash = node.getData();
-
+        this.infoId = node.getInfoId();
     }
 }

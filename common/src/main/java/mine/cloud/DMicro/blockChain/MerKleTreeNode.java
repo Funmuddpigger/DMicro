@@ -12,4 +12,5 @@ public class MerKleTreeNode {
     private MerKleTreeNode rChild;
     private String data;
     private Integer isLeaf;
+    private Integer infoId;
 }

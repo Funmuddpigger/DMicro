@@ -11,7 +11,7 @@ public class MerKleTreeUtils {
     public static List<MerKleTreeNode> buildInitMerKleHashNode(List<Map<String,String>> list){
         ArrayList<MerKleTreeNode> res = new ArrayList<>();
         for(Map<String,String> map : list){
-            MerKleTreeNode node = new MerKleTreeNode(null,null,BlockHashAlgoUtils.encodeDataBySHA_256(map),1);
+            MerKleTreeNode node = new MerKleTreeNode(null,null,BlockHashAlgoUtils.encodeDataBySHA_256(map),1,-1);
             res.add(node);
         }
         return res;
@@ -78,7 +78,7 @@ public class MerKleTreeUtils {
                 MerKleTreeNode lChild = data.get(j);
                 MerKleTreeNode rChild = data.get(j+1);
                 String hash = BlockHashAlgoUtils.encodeDataBySHA_256(lChild.getData() + rChild.getData());
-                MerKleTreeNode node = new MerKleTreeNode(lChild, rChild, hash,0);
+                MerKleTreeNode node = new MerKleTreeNode(lChild, rChild, hash,0,-1);
                 temp.add(node);
                 //输出非叶节点的序号
                 System.out.println(idxStart++);

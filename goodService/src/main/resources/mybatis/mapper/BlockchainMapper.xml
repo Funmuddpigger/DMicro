@@ -141,7 +141,7 @@
   </update>
 
   <!-- select last by type -->
-  <select id="selectLastOne" parameterType="java.lang.String">
+  <select id="selectLastOne" parameterType="java.lang.String" resultMap="BaseResultMap">
     SELECT
     <include refid="Base_Column_List" />
     FROM blockchain

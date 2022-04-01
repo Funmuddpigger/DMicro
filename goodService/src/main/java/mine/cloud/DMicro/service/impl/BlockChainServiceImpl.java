@@ -43,6 +43,7 @@ public class BlockChainServiceImpl implements IBlockChainService , IMerkleServic
     }
 
     //生成创世区块
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResultList createFirstBlock(Blockchain blockChain) {
         ResultList res = new ResultList();
@@ -53,7 +54,7 @@ public class BlockChainServiceImpl implements IBlockChainService , IMerkleServic
         map.put("Msg1","This is first block" + new Date());
         Double v = Math.random() * Math.random();
         map.put("Msg2",v.toString());
-        blockChain.setBlockTimestamp(new Date().getTime());
+        blockChain.setBlockTimestamp(new Date());
         blockChain.setBlockPrev("0");
         blockChain.setBlockMerkle("");
         blockChain.setBlockHash(BlockHashAlgoUtils.encodeDataBySHA_256(map));
@@ -90,8 +91,8 @@ public class BlockChainServiceImpl implements IBlockChainService , IMerkleServic
         map.put("Infos",infos.toString());
         Block block = new Block(prevBlock.getBlockHash(), map, new Date().getTime(), merKleRoot.getData());
         //构造block
-        Blockchain currentblock = new Blockchain(block,type);
-        blockchainMapper.insertSelective(currentblock);
+        Blockchain currentBlock = new Blockchain(block,type);
+        blockchainMapper.insertSelective(currentBlock);
         return res;
     }
 
@@ -99,7 +100,7 @@ public class BlockChainServiceImpl implements IBlockChainService , IMerkleServic
     public List<MerKleTreeNode> buildInitMerKleHashNode(List<Info> list){
         ArrayList<MerKleTreeNode> res = new ArrayList<>();
         for(Info info : list){
-            MerKleTreeNode node = new MerKleTreeNode(null,null, BlockHashAlgoUtils.encodeDataBySHA_256(info.toString()),1);
+            MerKleTreeNode node = new MerKleTreeNode(null,null, BlockHashAlgoUtils.encodeDataBySHA_256(info.toString()),1,info.getInfoId());
             res.add(node);
             System.out.println(info);
         }
@@ -178,7 +179,7 @@ public class BlockChainServiceImpl implements IBlockChainService , IMerkleServic
                 MerKleTreeNode lChild = data.get(j);
                 MerKleTreeNode rChild = data.get(j+1);
                 String hash = BlockHashAlgoUtils.encodeDataBySHA_256(lChild.getData() + rChild.getData());
-                MerKleTreeNode node = new MerKleTreeNode(lChild, rChild, hash,0);
+                MerKleTreeNode node = new MerKleTreeNode(lChild, rChild, hash,0,-1);
                 temp.add(node);
 
                 //通过idx方式插入数据库
@@ -197,6 +198,9 @@ public class BlockChainServiceImpl implements IBlockChainService , IMerkleServic
             height--;
             size = size >> 1;
         }
+        /**
+         * 批量插入,有问题全部回滚,比逐条插入好
+         */
         if(!CollectionUtils.isEmpty(merkleNodes)){
             merkleNodeMapper.insertBatchMerkleNode(merkleNodes);
         }

@@ -43,7 +43,7 @@ public class GoodController {
         return infoService.queryInfos(record);
     }
 
-    @RequestMapping(value="add-info",method = {RequestMethod.GET,RequestMethod.POST})
+    @RequestMapping(value="/add-info",method = {RequestMethod.GET,RequestMethod.POST})
     public ResultList addDetailsInfos(@RequestBody List<Info> records,@RequestParam("type") String type){
         return infoService.addDetailsInfos(records,type);
     }

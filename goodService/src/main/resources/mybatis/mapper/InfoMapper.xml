@@ -21,12 +21,7 @@
     delete from info_table
     where info_id = #{infoId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="mine.cloud.DMicro.pojo.Info">
-    insert into info_table (info_id, info_msg, good_id, 
-      usr_id, info_time)
-    values (#{infoId,jdbcType=INTEGER}, #{infoMsg,jdbcType=VARCHAR}, #{goodId,jdbcType=INTEGER}, 
-      #{usrId,jdbcType=INTEGER}, #{infoTime,jdbcType=TIMESTAMP})
-  </insert>
+
   <insert id="insertSelective" parameterType="mine.cloud.DMicro.pojo.Info">
     insert into info_table
     <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -90,4 +85,17 @@
       info_time = #{infoTime,jdbcType=TIMESTAMP}
     where info_id = #{infoId,jdbcType=INTEGER}
   </update>
+  <insert id="insertBatchBySelective" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="infoId" keyColumn="info_id">
+    insert into info_table(info_id,info_msg,good_id,usr_id,info_time)
+    VALUES
+    <foreach collection="list" item="item" index="index" separator= ",">
+      (
+      COALESCE(#{item.infoId}),
+      COALESCE(#{item.infoMsg},'no msg'),
+      COALESCE(#{item.goodId},'0'),
+      COALESCE(#{item.usrId},'0'),
+      COALESCE(#{item.infoTime},'2022-2-20 10:10:24')
+      )
+    </foreach>
+  </insert>
 </mapper>

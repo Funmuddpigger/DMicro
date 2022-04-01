@@ -20,7 +20,7 @@ public class Blockchain {
 
     private String blockData;
 
-    private Long blockTimestamp;
+    private Date blockTimestamp;
 
     private String blockHash;
 
@@ -28,13 +28,11 @@ public class Blockchain {
 
     private String blockMerkle;
 
-    private Blockchain children;
-
     public Blockchain(Block block,String type){
         this.blockPrev = block.getPreviousHash();
         this.blockHash = block.getBlockHash();
         this.blockMerkle = block.getMerkleRoot();
-        this.blockTimestamp = new Date().getTime();
+        this.blockTimestamp = new Date();
         this.blockType = type;
     }
 
