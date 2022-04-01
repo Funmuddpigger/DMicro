@@ -8,7 +8,7 @@ import mine.cloud.DMicro.utils.ResultList;
 import java.util.List;
 
 public interface IBlockChainService {
-    ResultList insertBlock(MerkleNode node);
+    ResultList createFirstBlock(Blockchain block);
 
-    ResultList queryBlockChainBlock(MerkleNode node);
+    ResultList queryBlockChainBlock(Blockchain block);
 }

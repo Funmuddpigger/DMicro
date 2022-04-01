@@ -6,10 +6,7 @@ import mine.cloud.DMicro.service.IGoodService;
 import mine.cloud.DMicro.service.InfoService;
 import mine.cloud.DMicro.utils.ResultList;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,30 +22,30 @@ public class GoodController {
     @Autowired
     private InfoService infoService;
 
-    @RequestMapping("/select")
+    @RequestMapping(value="/select",method = {RequestMethod.GET,RequestMethod.POST})
     public ResultList searchGoodBySelective(@RequestBody Good record){
         return iGoodService.searchGoodBySelective(record);
     }
 
     //good模块上传回显url(image)
-    @RequestMapping("/upload")
+    @RequestMapping(value="/upload",method = {RequestMethod.GET,RequestMethod.POST})
     public ResultList uploadImg(@RequestParam("image") MultipartFile file, HttpServletRequest request)  {
         return iGoodService.upLoadImageOrFile(file, request);//这里调用service的upfile方法，传入两个参数。
     }
 
-    @RequestMapping("delete")
+    @RequestMapping(value = "delete",method = {RequestMethod.GET,RequestMethod.POST})
     public ResultList deleteGoodInfo(@RequestBody List<Integer> goodIdList){
         return iGoodService.deleteBatchByList(goodIdList);
     }
 
-    @RequestMapping("/searchInfo")
+    @RequestMapping(value="/searchInfo",method = {RequestMethod.GET,RequestMethod.POST})
     public ResultList queryGoodInfo(@RequestBody Info record){
         return infoService.queryInfos(record);
     }
 
-    @RequestMapping("add-info")
-    public ResultList addDetailsInfos(@RequestBody List<Info> records){
-        return infoService.addDetailsInfos(records);
+    @RequestMapping(value="add-info",method = {RequestMethod.GET,RequestMethod.POST})
+    public ResultList addDetailsInfos(@RequestBody List<Info> records,@RequestParam("type") String type){
+        return infoService.addDetailsInfos(records,type);
     }
 
 }

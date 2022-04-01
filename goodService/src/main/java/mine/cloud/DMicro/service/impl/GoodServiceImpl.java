@@ -3,7 +3,9 @@ package mine.cloud.DMicro.service.impl;
 import mine.cloud.DMicro.dao.GoodMapper;
 import mine.cloud.DMicro.pojo.Good;
 import mine.cloud.DMicro.pojo.Info;
+import mine.cloud.DMicro.service.IBlockChainService;
 import mine.cloud.DMicro.service.IGoodService;
+import mine.cloud.DMicro.service.IMerkleService;
 import mine.cloud.DMicro.service.InfoService;
 import mine.cloud.DMicro.utils.HttpStatusCode;
 import mine.cloud.DMicro.utils.ImageUploadUtils;
@@ -11,7 +13,6 @@ import mine.cloud.DMicro.utils.ResultList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -20,6 +21,12 @@ public class GoodServiceImpl implements IGoodService , InfoService {
 
     @Autowired
     private GoodMapper goodMapper;
+
+    @Autowired
+    private IMerkleService iMerkleService;
+
+    @Autowired
+    private IBlockChainService iBlockChainService;
 
     @Override
     public ResultList searchGoodBySelective(Good record) {
@@ -58,7 +65,9 @@ public class GoodServiceImpl implements IGoodService , InfoService {
     }
 
     @Override
-    public ResultList addDetailsInfos(List<Info> records) {
+    public ResultList addDetailsInfos(List<Info> records,String type) {
+        iMerkleService.createBlockLinkWithData(records,type);
         return null;
     }
+
 }

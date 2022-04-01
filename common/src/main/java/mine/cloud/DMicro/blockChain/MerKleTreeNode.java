@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MerKleNode {
-    private MerKleNode lChild;
-    private MerKleNode rChild;
+public class MerKleTreeNode {
+    private MerKleTreeNode lChild;
+    private MerKleTreeNode rChild;
     private String data;
+    private Integer isLeaf;
 }

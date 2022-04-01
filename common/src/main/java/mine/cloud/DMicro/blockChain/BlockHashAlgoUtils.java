@@ -1,6 +1,7 @@
 package mine.cloud.DMicro.blockChain;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import mine.cloud.DMicro.pojo.Info;
 
 import java.security.MessageDigest;
 import java.util.Map;
