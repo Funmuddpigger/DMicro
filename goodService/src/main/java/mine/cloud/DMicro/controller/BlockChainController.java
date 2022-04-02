@@ -30,7 +30,7 @@ public class BlockChainController {
         return res;
     }
 
-    //得到验证路径
+    //check
     @RequestMapping(value="spvcheck",method = {RequestMethod.GET,RequestMethod.POST})
     public ResultList spvCheckMsgData(@RequestParam("infoId") Integer infoId){
         return blockChainService.spvCheckMsgData(infoId);

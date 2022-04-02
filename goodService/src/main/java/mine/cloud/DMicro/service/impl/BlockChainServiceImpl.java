@@ -4,18 +4,21 @@ import mine.cloud.DMicro.blockChain.Block;
 import mine.cloud.DMicro.blockChain.BlockHashAlgoUtils;
 import mine.cloud.DMicro.blockChain.MerKleTreeNode;
 import mine.cloud.DMicro.dao.BlockchainMapper;
+import mine.cloud.DMicro.dao.InfoMapper;
 import mine.cloud.DMicro.dao.MerkleNodeMapper;
 import mine.cloud.DMicro.pojo.Blockchain;
 import mine.cloud.DMicro.pojo.Info;
 import mine.cloud.DMicro.pojo.MerkleNode;
 import mine.cloud.DMicro.service.IBlockChainService;
 import mine.cloud.DMicro.service.IMerkleService;
+import mine.cloud.DMicro.service.InfoService;
 import mine.cloud.DMicro.utils.HttpStatusCode;
 import mine.cloud.DMicro.utils.ResultList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 
@@ -30,7 +33,8 @@ public class BlockChainServiceImpl implements IBlockChainService , IMerkleServic
     @Autowired
     private MerkleNodeMapper merkleNodeMapper;
 
-
+    @Autowired
+    private InfoMapper infoMapper;
 
     @Override
     public int insertMerkleNode(MerkleNode node) {
@@ -89,7 +93,9 @@ public class BlockChainServiceImpl implements IBlockChainService , IMerkleServic
     public List<MerkleNode> getCheckProof(Integer infoId) {
         MerkleNode node = new MerkleNode();
         node.setInfoId(infoId);
-
+        /**
+         * mapper降序处理
+         */
         List<MerkleNode> nodes = merkleNodeMapper.selectBySelective(node);
 
         ArrayList<Integer> list = new ArrayList<>();
@@ -146,13 +152,33 @@ public class BlockChainServiceImpl implements IBlockChainService , IMerkleServic
          * 与区块链上的block比对Merkle Root
          */
         Blockchain blockchain = blockchainMapper.selectByPrimaryKey(blockIndex);
-        if(blockchain.getBlockMerkle() != merkleRoot.getHash()){
+        if(!blockchain.getBlockMerkle().equals(merkleRoot.getHash())){
             return res;
         }
         /**
          *  与merkle树上的验证路径比对
+         *  mapper降序处理
+         *  通过奇偶判断左右孩子
+         *  跑到最后一层即可,不用继续计算
          */
-        return null;
+        Info info = infoMapper.selectByPrimaryKey(infoId);
+        String hash = BlockHashAlgoUtils.encodeDataBySHA_256(info.toString());
+        for(int i = checkProofs.size()-1;i>0;i--){
+            MerkleNode node2 = checkProofs.get(i);
+            if((node2.getMerkleNodeIndex()&1)==0){
+                hash = BlockHashAlgoUtils.encodeDataBySHA_256(node2.getHash()+hash);
+            }else{
+                hash = BlockHashAlgoUtils.encodeDataBySHA_256(hash + node2.getHash());
+            }
+        }
+        /**
+         * 新生成的与merkle root再次比对
+         */
+        if(!blockchain.getBlockMerkle().equals(hash)){
+            return res;
+        }
+        res.setOneData(true);
+        return res;
     }
 
 
@@ -186,7 +212,7 @@ public class BlockChainServiceImpl implements IBlockChainService , IMerkleServic
         if(!CollectionUtils.isEmpty(merkleNodes)){
             merkleNodeMapper.insertBatchMerkleNode(merkleNodes);
         }
-        return res;
+        return null;
     }
 
     public MerkleNode getMerkleRoot(Integer BlockIdx) {
