@@ -11,4 +11,8 @@ public interface IBlockChainService {
     ResultList createFirstBlock(Blockchain block);
 
     ResultList queryBlockChainBlock(Blockchain block);
+
+    List<MerkleNode> getCheckProof(Integer infoId);
+
+    ResultList spvCheckMsgData(Integer infoId);
 }

@@ -70,7 +70,88 @@ public class BlockChainServiceImpl implements IBlockChainService , IMerkleServic
     //传入创世区块，查询链条
     @Override
     public ResultList queryBlockChainBlock(Blockchain block) {
-        blockchainMapper.selectBlockChainByParents(block);
+        ResultList res = new ResultList();
+        res.setCode(HttpStatusCode.HTTP_OK);
+        res.setMsg("ok");
+        List<Blockchain> blockchains = blockchainMapper.selectBlockChainBlock(block);
+        res.setData(blockchains);
+        return res;
+    }
+
+    /**
+     * 获取验证路径（除叶子和头），根据传入的id找到对应加密的叶子节点idx并且计算它的辈id
+     * 完全/满二叉树性质， 左孩子 = 父亲序号*2 ，右孩子 = 父亲序号*2 +1
+     * 11 ： 1011 ， 1011 >> 1 = 101 == 5
+     * @param infoId
+     * @return
+     */
+    @Override
+    public List<MerkleNode> getCheckProof(Integer infoId) {
+        MerkleNode node = new MerkleNode();
+        node.setInfoId(infoId);
+
+        List<MerkleNode> nodes = merkleNodeMapper.selectBySelective(node);
+
+        ArrayList<Integer> list = new ArrayList<>();
+        List<MerkleNode> merkleNodes = new ArrayList<>();
+        if(!CollectionUtils.isEmpty(nodes)){
+            /**
+             * 存在复制出来的数据可能性，去掉idx打的那个
+             */
+            Integer idx = nodes.get(0).getMerkleNodeIndex();
+            /**
+             * 利用满二叉树编号特性（相邻接点+1，父节点 >>2 ,偶数为左节点,奇数为右节点）
+             * 利用2的倍数2进制关系
+             * 010110 & 000001 = 0 偶数
+             */
+            while(idx>1){
+                /**
+                 * if 是偶数左节点，取他的右兄弟节点
+                 * else 取左节点
+                 * 完成后向父节点移动
+                 */
+                if((idx&1) == 0){
+                    list.add(idx+1);
+                }else{
+                    list.add(idx-1);
+                }
+                idx = idx >> 1;
+            }
+            /**
+             * 1也要加入进去
+             */
+            list.add(idx);
+            merkleNodes = merkleNodeMapper.selectByMerkleIdx(list);
+        }
+        return merkleNodes;
+    }
+
+    @Override
+    public ResultList spvCheckMsgData(Integer infoId) {
+        List<MerkleNode> checkProofs = getCheckProof(infoId);
+        ResultList res = new ResultList();
+        res.setOneData(false);
+        if(CollectionUtils.isEmpty(checkProofs)){
+            return res;
+        }
+        /**
+         * 从集合中取出一个，任意一个所属的区块和链都应相同
+         */
+        Integer blockIndex = checkProofs.get(0).getBlockIndex();
+        MerkleNode merkleRoot = getMerkleRoot(blockIndex);
+        if(Objects.isNull(merkleRoot)){
+            return res;
+        }
+        /**
+         * 与区块链上的block比对Merkle Root
+         */
+        Blockchain blockchain = blockchainMapper.selectByPrimaryKey(blockIndex);
+        if(blockchain.getBlockMerkle() != merkleRoot.getHash()){
+            return res;
+        }
+        /**
+         *  与merkle树上的验证路径比对
+         */
         return null;
     }
 
@@ -82,7 +163,8 @@ public class BlockChainServiceImpl implements IBlockChainService , IMerkleServic
         res.setCode(HttpStatusCode.HTTP_OK);
 
         List<MerKleTreeNode> merKleTreeNodes = buildInitMerKleHashNode(infos);
-        MerKleTreeNode merKleRoot = generateMerKleRootHash(merKleTreeNodes);
+        ArrayList<MerkleNode> merkleNodes = new ArrayList<>();
+        MerKleTreeNode merKleRoot = generateMerKleRootHash(merKleTreeNodes,merkleNodes);
 
         //获取上一个块的hash，构造下一个块
         List<Blockchain> blockchains = blockchainMapper.selectLastOne(type);
@@ -92,8 +174,29 @@ public class BlockChainServiceImpl implements IBlockChainService , IMerkleServic
         Block block = new Block(prevBlock.getBlockHash(), map, new Date().getTime(), merKleRoot.getData());
         //构造block
         Blockchain currentBlock = new Blockchain(block,type);
+
         blockchainMapper.insertSelective(currentBlock);
+        /**
+         * 插入block_id
+         * 批量插入,有问题全部回滚
+         */
+        for(MerkleNode node : merkleNodes){
+            node.setBlockIndex(currentBlock.getBlockId());
+        }
+        if(!CollectionUtils.isEmpty(merkleNodes)){
+            merkleNodeMapper.insertBatchMerkleNode(merkleNodes);
+        }
         return res;
+    }
+
+    public MerkleNode getMerkleRoot(Integer BlockIdx) {
+        MerkleNode node = new MerkleNode();
+        node.setBlockIndex(BlockIdx);
+        //root必为1
+        node.setMerkleNodeIndex(1);
+
+        List<MerkleNode> nodes = merkleNodeMapper.selectBySelective(node);
+        return nodes.get(0);
     }
 
 
@@ -111,7 +214,7 @@ public class BlockChainServiceImpl implements IBlockChainService , IMerkleServic
      * 接收分片后的数据，然后生成一棵树
      */
     @Transactional(rollbackFor = Exception.class)
-    public MerKleTreeNode generateMerKleRootHash(List<MerKleTreeNode> data){
+    public MerKleTreeNode generateMerKleRootHash(List<MerKleTreeNode> data,ArrayList<MerkleNode> merkleNodes){
         int size = data.size();
         /**
          * 计算能容纳size最接近的的2的幂次的那个数 e.g.
@@ -145,7 +248,7 @@ public class BlockChainServiceImpl implements IBlockChainService , IMerkleServic
         int height = Integer.toBinaryString(size).length();
         int total = (int)(Math.pow(2,height)-1);
 
-        ArrayList<MerkleNode> merkleNodes = new ArrayList<>();
+
         int idxStart = (total +1) >> 1;
         /**
          * 叶子节点加入集合
@@ -197,12 +300,6 @@ public class BlockChainServiceImpl implements IBlockChainService , IMerkleServic
             data = temp;
             height--;
             size = size >> 1;
-        }
-        /**
-         * 批量插入,有问题全部回滚,比逐条插入好
-         */
-        if(!CollectionUtils.isEmpty(merkleNodes)){
-            merkleNodeMapper.insertBatchMerkleNode(merkleNodes);
         }
         return data.get(0);
     }

@@ -4,7 +4,7 @@
   <resultMap id="BaseResultMap" type="mine.cloud.DMicro.pojo.MerkleNode">
     <id column="merkle_node_id" jdbcType="INTEGER" property="merkleNodeId" />
     <result column="merkle_node_index" jdbcType="INTEGER" property="merkleNodeIndex" />
-    <result column="block_index" jdbcType="VARCHAR" property="blockIndex" />
+    <result column="block_index" jdbcType="INTEGER" property="blockIndex" />
     <result column="is_leaf_node" jdbcType="INTEGER" property="isLeafNode" />
     <result column="hash" jdbcType="VARCHAR" property="hash" />
     <result column="merkle_data" jdbcType="VARCHAR" property="merkleData" />
@@ -23,6 +23,7 @@
     select
     <include refid="Base_Column_List" />
     from merkle_node
+    where 1=1
     <if test="merkleNodeId != null">
      AND merkle_node_id = #{merkleNodeId,jdbcType=INTEGER}
     </if>
@@ -30,7 +31,7 @@
      AND merkle_node_index = #{merkleNodeIndex,jdbcType=INTEGER}
     </if>
     <if test="blockIndex != null">
-     AND block_index = #{blockIndex,jdbcType=VARCHAR}
+     AND block_index = #{blockIndex,jdbcType=INTEGER}
     </if>
     <if test="isLeafNode != null">
      AND is_leaf_node = #{isLeafNode,jdbcType=INTEGER}
@@ -44,6 +45,7 @@
     <if test="infoId != null">
       AND info_id = #{infoId,jdbcType=INTEGER}
     </if>
+    order by merkle_node_id
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
@@ -83,7 +85,7 @@
         #{merkleNodeIndex,jdbcType=INTEGER},
       </if>
       <if test="blockIndex != null">
-        #{blockIndex,jdbcType=VARCHAR},
+        #{blockIndex,jdbcType=INTEGER},
       </if>
       <if test="isLeafNode != null">
         #{isLeafNode,jdbcType=INTEGER},
@@ -105,8 +107,8 @@
     <foreach collection="list" item="item" index="index" separator= ",">
       (
       COALESCE(#{item.merkleNodeId}),
-      COALESCE(#{item.merkleNodeIndex},'0'),
-      COALESCE(#{item.blockIndex},''),
+      COALESCE(#{item.merkleNodeIndex},'-1'),
+      COALESCE(#{item.blockIndex},'-1'),
       COALESCE(#{item.isLeafNode},'0'),
       COALESCE(#{item.hash},''),
       COALESCE(#{item.merkleData},''),
@@ -121,7 +123,7 @@
         merkle_node_index = #{merkleNodeIndex,jdbcType=INTEGER},
       </if>
       <if test="blockIndex != null">
-        block_index = #{blockIndex,jdbcType=VARCHAR},
+        block_index = #{blockIndex,jdbcType=INTEGER},
       </if>
       <if test="isLeafNode != null">
         is_leaf_node = #{isLeafNode,jdbcType=INTEGER},
@@ -138,4 +140,18 @@
     </set>
     where merkle_node_id = #{merkleNodeId,jdbcType=INTEGER}
   </update>
+
+  <select id="selectByMerkleIdx" resultMap="BaseResultMap" parameterType="java.util.List">
+    select
+    <include refid="Base_Column_List" />
+    from merkle_node
+    <where>
+      merkle_node_index in
+      (
+      <foreach collection="list" item="id" index="index" separator=",">
+        #{id}
+      </foreach>
+      )
+    </where>
+  </select>
 </mapper>

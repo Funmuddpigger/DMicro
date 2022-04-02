@@ -1,6 +1,8 @@
 package mine.cloud.DMicro.dao;
 
 import mine.cloud.DMicro.pojo.MerkleNode;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public interface MerkleNodeMapper {
@@ -12,7 +14,9 @@ public interface MerkleNodeMapper {
 
     int updateByPrimaryKeySelective(MerkleNode record);
 
-    List<MerkleNode> selectMerkleTree(MerkleNode merkleNode);
+    List<MerkleNode> selectBySelective(MerkleNode merkleNode);
 
     int insertBatchMerkleNode(List<MerkleNode> merkleNodes);
+
+    List<MerkleNode> selectByMerkleIdx(ArrayList<Integer> list);
 }

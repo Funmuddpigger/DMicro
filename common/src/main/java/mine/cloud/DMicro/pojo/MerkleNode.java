@@ -15,7 +15,7 @@ public class MerkleNode {
 
     private Integer merkleNodeIndex;
 
-    private String blockIndex;
+    private Integer blockIndex;
 
     private Integer isLeafNode;
 

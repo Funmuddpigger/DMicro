@@ -1,14 +1,12 @@
 package mine.cloud.DMicro.controller;
 
+import mine.cloud.DMicro.blockChain.MerKleTreeNode;
 import mine.cloud.DMicro.pojo.Blockchain;
 import mine.cloud.DMicro.pojo.Info;
 import mine.cloud.DMicro.service.IBlockChainService;
 import mine.cloud.DMicro.utils.ResultList;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,5 +21,20 @@ public class BlockChainController {
     public ResultList addCreateBlock(@RequestBody Blockchain block){
         return blockChainService.createFirstBlock(block);
     }
+
+    //返回验证路径
+    @RequestMapping(value="proof",method = {RequestMethod.GET,RequestMethod.POST})
+    public ResultList queryProofBlock(@RequestParam("infoId") Integer infoId){
+        ResultList res = new ResultList();
+        res.setData(blockChainService.getCheckProof(infoId));
+        return res;
+    }
+
+    //得到验证路径
+    @RequestMapping(value="spvcheck",method = {RequestMethod.GET,RequestMethod.POST})
+    public ResultList spvCheckMsgData(@RequestParam("infoId") Integer infoId){
+        return blockChainService.spvCheckMsgData(infoId);
+    }
+
 
 }
