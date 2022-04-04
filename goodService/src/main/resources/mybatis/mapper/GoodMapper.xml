@@ -11,7 +11,7 @@
     <result column="user_id" jdbcType="INTEGER" property="userId" />
   </resultMap>
   <sql id="Base_Column_List">
-    good_id, good_name, good_price, good_args, good_text
+    good_id, good_name, good_price, good_args, good_text,good_img,user_id
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -63,6 +63,12 @@
       <if test="goodText != null">
         good_text,
       </if>
+      <if test="goodImg != null">
+        good_img,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="goodId != null">
@@ -79,6 +85,12 @@
       </if>
       <if test="goodText != null">
         #{goodText,jdbcType=VARCHAR},
+      </if>
+      <if test="goodImg != null">
+        #{goodImg,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>

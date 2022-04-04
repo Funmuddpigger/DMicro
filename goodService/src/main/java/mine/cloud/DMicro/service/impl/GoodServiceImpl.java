@@ -14,6 +14,7 @@ import mine.cloud.DMicro.utils.ResultList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -57,14 +58,29 @@ public class GoodServiceImpl implements IGoodService , InfoService {
     }
 
     @Override
-    public ResultList addGoodBatchByList(List<Good> records) {
+    public ResultList addGoodBatchByList(List<Good> records,String token) {
+        if(!StringUtils.isEmpty(token)){
+
+        }
         return null;
+    }
+
+    @Override
+    public ResultList addGood(Good records, String token) {
+        ResultList res = new ResultList();
+        goodMapper.insertSelective(records);
+        res.setMsg("ok");
+        res.setCode(HttpStatusCode.HTTP_OK);
+        return res;
     }
 
 
     @Override
     public ResultList queryInfos(Info record) {
-        return null;
+        ResultList res = new ResultList();
+        List<Info> data = infoMapper.selectBySelectvie(record);
+        res.setData(data);
+        return res;
     }
 
     @Transactional(rollbackFor = Exception.class)

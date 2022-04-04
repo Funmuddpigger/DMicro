@@ -17,7 +17,7 @@ public class MerKleTreeUtils {
         return res;
     }
     /**
-     *     接收分片后的数据，然后生成一棵树
+     *     接收分片后的数据，然后生成Merkle树
      */
     public static MerKleTreeNode generateMerKleRootHash(List<MerKleTreeNode> data){
         int size = data.size();
@@ -46,43 +46,43 @@ public class MerKleTreeUtils {
             size = n;
         }
         /**
-         * 获取size的二进制形式，它的长度就是merkle树的高度
-         */
-        int height = Integer.toBinaryString(size).length();
+             * 获取size的二进制形式，它的长度就是merkle树的高度
+             */
+            int height = Integer.toBinaryString(size).length();
 
-        int total = (int)(Math.pow(2,height)-1);
-        /**
-         * 输出叶子节点
-         */
-        int idxStart = (total +1) >> 1;
-        for(MerKleTreeNode node : data){
-            System.out.println(idxStart++);
-        }
-        /**
-         * 两两hash,构造merkle root
-         * 最后一层已经通过函数buildInitMerKleHashNode构建好并传入
-         * 此函数中
-         */
-        while(height-1>0){
+            int total = (int)(Math.pow(2,height)-1);
             /**
-             * 总节点数 2^n-1
-             * 每一层的最左节点序号
+             * 输出叶子节点
              */
-            total = (int)(Math.pow(2,height-1)-1);
-            idxStart = (total +1) >> 1;
-            /**
-             * 逐层构建，new temp(list) 作为新一层的数据赋值到data（list）上，循环
-             */
-            ArrayList<MerKleTreeNode> temp = new ArrayList<>();
-            for(int j = 0; j < size ; j+=2){
-                MerKleTreeNode lChild = data.get(j);
-                MerKleTreeNode rChild = data.get(j+1);
-                String hash = BlockHashAlgoUtils.encodeDataBySHA_256(lChild.getData() + rChild.getData());
-                MerKleTreeNode node = new MerKleTreeNode(lChild, rChild, hash,0,-1);
-                temp.add(node);
-                //输出非叶节点的序号
+            int idxStart = (total +1) >> 1;
+            for(MerKleTreeNode node : data){
                 System.out.println(idxStart++);
             }
+            /**
+             * 两两hash,构造merkle root
+             * 最后一层已经通过函数buildInitMerKleHashNode构建好并传入
+             * 此函数中
+             */
+            while(height-1>0){
+                /**
+                 * 总节点数 2^n-1
+                 * 每一层的最左节点序号
+                 */
+                total = (int)(Math.pow(2,height-1)-1);
+                idxStart = (total +1) >> 1;
+                /**
+                 * 逐层构建，new temp(list) 作为新一层的数据赋值到data（list）上，循环
+                 */
+                ArrayList<MerKleTreeNode> temp = new ArrayList<>();
+                for(int j = 0; j < size ; j+=2){
+                    MerKleTreeNode lChild = data.get(j);
+                    MerKleTreeNode rChild = data.get(j+1);
+                    String hash = BlockHashAlgoUtils.encodeDataBySHA_256(lChild.getData() + rChild.getData());
+                    MerKleTreeNode node = new MerKleTreeNode(lChild, rChild, hash,0,-1);
+                    temp.add(node);
+                    //输出非叶节点的序号
+                    System.out.println(idxStart++);
+                }
             //temp 下个循环进行新建回收，赋值data
             data = temp;
             height--;

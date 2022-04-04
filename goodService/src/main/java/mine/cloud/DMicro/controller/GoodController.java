@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/good")
 public class GoodController {
@@ -23,8 +24,13 @@ public class GoodController {
     private InfoService infoService;
 
     @RequestMapping(value="/select",method = {RequestMethod.GET,RequestMethod.POST})
-    public ResultList searchGoodBySelective(@RequestBody Good record){
+    public ResultList searchGoodBySelective(@RequestBody(required = false) Good record){
         return iGoodService.searchGoodBySelective(record);
+    }
+
+    @RequestMapping(value="/add-good",method = {RequestMethod.GET,RequestMethod.POST})
+    public ResultList addGoodBySelective(@RequestHeader(required = false) String token,@RequestBody(required = false) Good record){
+        return iGoodService.addGood(record,token);
     }
 
     //good模块上传回显url(image)
@@ -34,17 +40,17 @@ public class GoodController {
     }
 
     @RequestMapping(value = "delete",method = {RequestMethod.GET,RequestMethod.POST})
-    public ResultList deleteGoodInfo(@RequestBody List<Integer> goodIdList){
+    public ResultList deleteGoodInfo(@RequestBody(required = false) List<Integer> goodIdList){
         return iGoodService.deleteBatchByList(goodIdList);
     }
 
-    @RequestMapping(value="/searchInfo",method = {RequestMethod.GET,RequestMethod.POST})
-    public ResultList queryGoodInfo(@RequestBody Info record){
+    @RequestMapping(value="/search-info",method = {RequestMethod.GET,RequestMethod.POST})
+    public ResultList queryGoodInfo(@RequestBody(required = false) Info record){
         return infoService.queryInfos(record);
     }
 
     @RequestMapping(value="/add-info",method = {RequestMethod.GET,RequestMethod.POST})
-    public ResultList addDetailsInfos(@RequestBody List<Info> records,@RequestParam("type") String type){
+    public ResultList addDetailsInfos(@RequestBody(required = false) List<Info> records,@RequestParam("type") String type){
         return infoService.addDetailsInfos(records,type);
     }
 

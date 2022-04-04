@@ -18,4 +18,6 @@ public interface InfoMapper {
     int updateByPrimaryKey(Info record);
 
     int insertBatchBySelective(List<Info> records);
+
+    List<Info> selectBySelectvie(Info record);
 }

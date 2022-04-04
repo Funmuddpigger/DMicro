@@ -19,5 +19,8 @@ public interface IGoodService {
     ResultList deleteBatchByList(List<Integer> goodIdList);
 
     //add
-    ResultList addGoodBatchByList(List<Good> records);
+    ResultList addGoodBatchByList(List<Good> records,String token);
+
+    //add
+    ResultList addGood(Good records,String token);
 }
