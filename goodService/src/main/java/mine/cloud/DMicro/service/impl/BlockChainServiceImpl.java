@@ -212,7 +212,7 @@ public class BlockChainServiceImpl implements IBlockChainService , IMerkleServic
         if(!CollectionUtils.isEmpty(merkleNodes)){
             merkleNodeMapper.insertBatchMerkleNode(merkleNodes);
         }
-        return null;
+        return res;
     }
 
     public MerkleNode getMerkleRoot(Integer BlockIdx) {

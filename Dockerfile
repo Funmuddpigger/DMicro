@@ -55,4 +55,5 @@ docker run --name usr-service -p 5050:5050 -d usr-service:1.0 -v /data/images:/d
 docker run --name art-service -p 7070:7070 -d art-service:1.0 -v /data/images:/data/images
 docker run --name topic-service -p 10010:10010 -d topic-service:1.0 -v /data/images:/data/images
 docker run --name comment-service -p 4040:4040 -d comment-service:1.0 -v /data/images:/data/images
+docker run --name good-service -p 9090:9090 -d good-service:1.0 -v /data/images:/data/images
 docker run --name gateway -p 21000:21000 -d gateway:1.0
