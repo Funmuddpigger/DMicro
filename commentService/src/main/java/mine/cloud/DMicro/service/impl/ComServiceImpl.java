@@ -9,10 +9,12 @@ import mine.cloud.DMicro.service.IComServiceApi;
 import mine.cloud.DMicro.utils.HttpStatusCode;
 import mine.cloud.DMicro.utils.Result;
 import mine.cloud.DMicro.utils.ResultList;
+import mine.cloud.DMicro.utils.StringHelperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -31,9 +33,14 @@ public class ComServiceImpl implements IComServiceApi {
      * @return
      */
     @Override
-    public ResultList addCommentBySelectives(Comment params) {
+    public ResultList addCommentBySelectives(String token,Comment params) {
+        User user = handleTokenAuthRes(token);
         ResultList res = new ResultList();
         res.setCode(HttpStatusCode.HTTP_OK);
+        params.setComDate(new Date());
+        params.setUsrId(user.getUsrId());
+        params.setComParId(0);
+        params.setComLike(0L);
         int count = commentMapper.insert(params);
         if(count >=1 ){
             res.setMsg("fail");
@@ -104,5 +111,24 @@ public class ComServiceImpl implements IComServiceApi {
         res.setCode(HttpStatusCode.HTTP_OK);
         commentMapper.deleteBySelectives(record);
         return null;
+    }
+
+    private User handleTokenAuthRes(String token){
+        if(!StringHelperUtils.isNotEmpty(token)){
+            return new User();
+        }
+        ResultList authRes = usrClient.getAuthAndCheck(token);
+        try{
+            if(authRes.getCode()!=HttpStatusCode.HTTP_OK){
+                throw new RuntimeException("无效token,请校验");
+            }
+            //token有效
+            ObjectMapper mapper = new ObjectMapper();
+            String str = mapper.writeValueAsString(authRes.getOneData());
+            User usr = mapper.readValue(str, User.class);
+            return usr;
+        }catch(Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

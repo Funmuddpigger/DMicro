@@ -97,7 +97,10 @@ public class BlockChainServiceImpl implements IBlockChainService , IMerkleServic
          * mapper降序处理
          */
         List<MerkleNode> nodes = merkleNodeMapper.selectBySelective(node);
-
+        /**
+         * 获取所在区块
+         */
+        Integer blockIndex = nodes.get(0).getBlockIndex();
         ArrayList<Integer> list = new ArrayList<>();
         List<MerkleNode> merkleNodes = new ArrayList<>();
         if(!CollectionUtils.isEmpty(nodes)){
@@ -105,6 +108,7 @@ public class BlockChainServiceImpl implements IBlockChainService , IMerkleServic
              * 存在复制出来的数据可能性，去掉idx打的那个
              */
             Integer idx = nodes.get(0).getMerkleNodeIndex();
+
             /**
              * 利用满二叉树编号特性（相邻接点+1，父节点 >>2 ,偶数为左节点,奇数为右节点）
              * 利用2的倍数2进制关系
@@ -127,7 +131,7 @@ public class BlockChainServiceImpl implements IBlockChainService , IMerkleServic
              * 1也要加入进去
              */
             list.add(idx);
-            merkleNodes = merkleNodeMapper.selectByMerkleIdx(list);
+            merkleNodes = merkleNodeMapper.selectByMerkleIdx(list,blockIndex);
         }
         return merkleNodes;
     }

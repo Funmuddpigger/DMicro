@@ -6,7 +6,7 @@ import mine.cloud.DMicro.utils.ResultList;
 public interface IComServiceApi {
 
     //add comment
-    ResultList addCommentBySelectives(Comment params);
+    ResultList addCommentBySelectives(String token,Comment params);
 
     //update comment
     ResultList updateCommentBySelectives(Comment params);

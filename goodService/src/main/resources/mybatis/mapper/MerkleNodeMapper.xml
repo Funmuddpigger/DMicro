@@ -141,7 +141,7 @@
     where merkle_node_id = #{merkleNodeId,jdbcType=INTEGER}
   </update>
 
-  <select id="selectByMerkleIdx" resultMap="BaseResultMap" parameterType="java.util.List">
+  <select id="selectByMerkleIdx" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from merkle_node
@@ -152,6 +152,7 @@
         #{id}
       </foreach>
       )
+      and block_index = #{block}
     </where>
   </select>
 </mapper>

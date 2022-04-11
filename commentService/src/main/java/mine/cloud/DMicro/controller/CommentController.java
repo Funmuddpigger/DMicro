@@ -37,7 +37,7 @@ public class CommentController {
     }
 
     @RequestMapping(value = "/insert",method = {RequestMethod.POST,RequestMethod.GET})
-    public ResultList addCommentBySelectives(@RequestBody Comment comment){
-        return iComServiceApi.addCommentBySelectives(comment);
+    public ResultList addCommentBySelectives(@RequestHeader("token") String token,@RequestBody Comment comment){
+        return iComServiceApi.addCommentBySelectives(token,comment);
     }
 }

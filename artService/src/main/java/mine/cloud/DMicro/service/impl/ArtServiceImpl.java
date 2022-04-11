@@ -434,7 +434,10 @@ public class ArtServiceImpl implements IArtServiceApi  {
             //exist del
             redisTemplate.opsForSet().remove("likeUser:article:"+ params.getArtId(), usr.getUsrId());
         }
+
+        Long size = redisTemplate.opsForSet().size("likeUser:article:" + params.getArtId());
         res.setCode(HttpStatusCode.HTTP_OK);
+        res.setTotal(size);
         res.setOneData(!exist);
         res.setMsg("ok");
         return res;

@@ -16,12 +16,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 @Service
-public class GoodServiceImpl implements IGoodService , InfoService {
+public class GoodServiceImpl implements IGoodService, InfoService {
 
     @Autowired
     private GoodMapper goodMapper;
@@ -58,8 +61,8 @@ public class GoodServiceImpl implements IGoodService , InfoService {
     }
 
     @Override
-    public ResultList addGoodBatchByList(List<Good> records,String token) {
-        if(!StringUtils.isEmpty(token)){
+    public ResultList addGoodBatchByList(List<Good> records, String token) {
+        if (!StringUtils.isEmpty(token)) {
 
         }
         return null;
@@ -85,13 +88,19 @@ public class GoodServiceImpl implements IGoodService , InfoService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public ResultList addDetailsInfos(List<Info> records,String type) {
-        for(Info info : records){
-            info.setInfoTime(new Date());
+    public ResultList addDetailsInfos(List<Info> records, String type) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date date = format.parse(format.format(new Date()));
+            for (Info info : records) {
+                info.setInfoTime(date);
+            }
+            infoMapper.insertBatchBySelective(records);
+            ResultList res = iMerkleService.createBlockLinkWithData(records, type);
+            return res;
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
-        infoMapper.insertBatchBySelective(records);
-        ResultList res = iMerkleService.createBlockLinkWithData(records, type);
-        return res;
     }
 
 }
