@@ -98,8 +98,8 @@ public class ArticleController {
     }
 
     //文章删除功能 
-    @RequestMapping(value = "/del",method = {RequestMethod.POST})
-    public ResultList deleteArticleById(@RequestBody Integer artId){
+    @RequestMapping(value = "/del",method = {RequestMethod.POST,RequestMethod.GET})
+    public ResultList deleteArticleById(@RequestParam("artId") Integer artId){
         return iArtServiceApi.deleteArticle(artId);
     }
 

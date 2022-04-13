@@ -26,6 +26,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -407,6 +408,7 @@ public class ArtServiceImpl implements IArtServiceApi  {
     @Override
     public ResultList updateArticle(Article article) {
         ResultList res = new ResultList();
+        article.setArtPostime(new Date());
         res.setCode(HttpStatusCode.HTTP_OK);
         res.setMsg("ok");
         articleMapper.updateByPrimaryKeySelective(article);
@@ -584,6 +586,10 @@ public class ArtServiceImpl implements IArtServiceApi  {
             //同步更新art_title
             redisTemplate.opsForList().leftPush("newArticle",article.getArtTitle());
             redisTemplate.opsForList().trim("newArticle",0,9);
+            //DEL 原有文档
+            DeleteRequest requestDel = new DeleteRequest("article", article.getArtId().toString());
+            //DSL
+            client.delete(requestDel,RequestOptions.DEFAULT);
             //JSON
             ArticleDoc articleDoc = new ArticleDoc(article);
             ObjectMapper mapper = new ObjectMapper();

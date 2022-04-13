@@ -163,8 +163,8 @@
       <if test="artSummary != null">
         art_summary = #{artSummary,jdbcType=VARCHAR},
       </if>
-      <if test="artUrl != null">
-        art_url = #{artSummary,jdbcType=VARCHAR},
+      <if test="artUrl != null and artUrl != ''">
+        art_url = #{artUrl,jdbcType=VARCHAR},
       </if>
     </set>
     where art_id = #{artId,jdbcType=INTEGER}
