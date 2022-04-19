@@ -13,18 +13,18 @@ spring:
           uri: lb://usr-service #路由的目标地址(服务名称或者ip地址都行)  lb代表loadbalance
           predicates: #路由断言,判断请求是否符合规则
             - Path=/user/** #路径断言,判断路径是否以/xxx开头,如果是则符合
-        - id: art-service #第一个路由标识,必须唯一
-          uri: lb://art-service #路由的目标地址(服务名称或者ip地址都行)  lb代表loadbalance
-          predicates: #路由断言,判断请求是否符合规则
-            - Path=/article/** #路径断言,判断路径是否以/xxx开头,如果是则符合
-        - id: com-service #第一个路由标识,必须唯一
-          uri: lb://com-service #路由的目标地址(服务名称或者ip地址都行)  lb代表loadbalance
-          predicates: #路由断言,判断请求是否符合规则
-            - Path=/comment/** #路径断言,判断路径是否以/xxx开头,如果是则符合
-        - id: topic-service #第一个路由标识,必须唯一
-          uri: lb://topic-service #路由的目标地址(服务名称或者ip地址都行)  lb代表loadbalance
-          predicates: #路由断言,判断请求是否符合规则
-            - Path=/topic/** #路径断言,判断路径是否以/xxx开头,如果是则符合
+        - id: art-service
+          uri: lb://art-service
+          predicates:
+            - Path=/article/**
+        - id: com-service
+          uri: lb://com-service
+          predicates:
+            - Path=/comment/**
+        - id: topic-service
+          uri: lb://topic-service
+          predicates:
+            - Path=/topic/**
       globalcors:
         cors-configurations:
           '[/**]':

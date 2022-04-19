@@ -47,7 +47,6 @@ spring:
         max-idle: 16
         min-idle: 0
       timeout: 3000
-      shutdown-timeout: 100
 
 server:
   port: 5050
