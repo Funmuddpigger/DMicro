@@ -15,6 +15,7 @@
         <module>common</module>
         <module>commentService</module>
         <module>topicService</module>
+        <module>gameService</module>
     </modules>
 
     <packaging>pom</packaging>
