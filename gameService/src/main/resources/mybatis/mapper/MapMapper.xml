@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mine.cloud.DMicro.dao.MapMapper">
+  <resultMap id="BaseResultMap" type="mine.cloud.DMicro.pojo.Map">
+    <id column="mapId" jdbcType="INTEGER" property="mapid" />
+    <result column="mapName" jdbcType="VARCHAR" property="mapname" />
+    <result column="mapRemark" jdbcType="VARCHAR" property="mapremark" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    mapId, mapName, mapRemark
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from map_table
+    where mapId = #{mapid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from map_table
+    where mapId = #{mapid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="mine.cloud.DMicro.pojo.Map">
+    insert into map_table (mapId, mapName, mapRemark
+      )
+    values (#{mapid,jdbcType=INTEGER}, #{mapname,jdbcType=VARCHAR}, #{mapremark,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="mine.cloud.DMicro.pojo.Map">
+    insert into map_table
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="mapid != null">
+        mapId,
+      </if>
+      <if test="mapname != null">
+        mapName,
+      </if>
+      <if test="mapremark != null">
+        mapRemark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="mapid != null">
+        #{mapid,jdbcType=INTEGER},
+      </if>
+      <if test="mapname != null">
+        #{mapname,jdbcType=VARCHAR},
+      </if>
+      <if test="mapremark != null">
+        #{mapremark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="mine.cloud.DMicro.pojo.Map">
+    update map_table
+    <set>
+      <if test="mapname != null">
+        mapName = #{mapname,jdbcType=VARCHAR},
+      </if>
+      <if test="mapremark != null">
+        mapRemark = #{mapremark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where mapId = #{mapid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="mine.cloud.DMicro.pojo.Map">
+    update map_table
+    set mapName = #{mapname,jdbcType=VARCHAR},
+      mapRemark = #{mapremark,jdbcType=VARCHAR}
+    where mapId = #{mapid,jdbcType=INTEGER}
+  </update>
+</mapper>
